@@ -64,6 +64,80 @@
       --btnBorder: rgba(0,255,154,.28);
     }
 
+    /* THEME: OCEAN */
+    [data-theme="ocean"]{
+      --bg:#061018;
+      --text:#eaf6ff;
+      --muted:#a6c7dd;
+      --line:rgba(255,255,255,.12);
+
+      --good:#2ee6a6;
+      --bad:#ff5c7a;
+      --warn:#ffd166;
+      --brand:#2fb7ff;
+
+      --panel: rgba(255,255,255,.07);
+      --panel2: rgba(0,0,0,.28);
+
+      --grad:
+        radial-gradient(900px 520px at 15% 5%, rgba(47,183,255,.18), transparent 60%),
+        radial-gradient(700px 520px at 85% 10%, rgba(46,230,166,.14), transparent 55%),
+        linear-gradient(180deg, #061018, #071a26);
+
+      --btnGrad: linear-gradient(180deg, rgba(47,183,255,.18), rgba(46,230,166,.10));
+      --btnBorder: rgba(47,183,255,.28);
+    }
+
+    /* THEME: SUNSET */
+    [data-theme="sunset"]{
+      --bg:#120a0a;
+      --text:#fff1e8;
+      --muted:#ffd1bd;
+      --line:rgba(255,255,255,.12);
+
+      --good:#ffb703;
+      --bad:#ff4d6d;
+      --warn:#ffd166;
+      --brand:#ff7a59;
+
+      --panel: rgba(255,255,255,.07);
+      --panel2: rgba(0,0,0,.28);
+
+      --grad:
+        radial-gradient(900px 520px at 18% 5%, rgba(255,122,89,.22), transparent 60%),
+        radial-gradient(700px 520px at 85% 10%, rgba(255,77,109,.16), transparent 55%),
+        radial-gradient(700px 520px at 50% 25%, rgba(255,183,3,.12), transparent 60%),
+        linear-gradient(180deg, #120a0a, #1a0f12);
+
+      --btnGrad: linear-gradient(180deg, rgba(255,122,89,.18), rgba(255,183,3,.10));
+      --btnBorder: rgba(255,122,89,.30);
+    }
+
+    /* THEME: PURPLE */
+    [data-theme="purple"]{
+      --bg:#0b0616;
+      --text:#f7f1ff;
+      --muted:#d7c6ff;
+      --line:rgba(255,255,255,.12);
+
+      --good:#7cf7c8;
+      --bad:#ff4dd8;
+      --warn:#ffd166;
+      --brand:#9b7bff;
+
+      --panel: rgba(255,255,255,.07);
+      --panel2: rgba(0,0,0,.30);
+
+      --grad:
+        radial-gradient(900px 520px at 14% 5%, rgba(155,123,255,.20), transparent 60%),
+        radial-gradient(700px 520px at 86% 10%, rgba(255,77,216,.14), transparent 55%),
+        radial-gradient(700px 520px at 52% 30%, rgba(124,247,200,.10), transparent 60%),
+        linear-gradient(180deg, #0b0616, #120b22);
+
+      --btnGrad: linear-gradient(180deg, rgba(155,123,255,.20), rgba(124,247,200,.10));
+      --btnBorder: rgba(155,123,255,.28);
+    }
+
     *{box-sizing:border-box}
     body{
       margin:0;
@@ -80,6 +154,9 @@
       border-bottom:1px solid var(--line);
     }
     [data-theme="neon"] header{ background: rgba(5,6,11,.74); }
+    [data-theme="ocean"] header{ background: rgba(6,16,24,.76); }
+    [data-theme="sunset"] header{ background: rgba(18,10,10,.76); }
+    [data-theme="purple"] header{ background: rgba(11,6,22,.76); }
 
     .wrap{max-width:1200px; margin:0 auto; padding:14px 16px;}
     .topbar{display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;}
@@ -290,7 +367,7 @@
       font-size:12px;
     }
 
-    /* THEME SWITCHER (right footer/side) */
+    /* THEME SWITCHER */
     .themeDock{
       position: fixed;
       right: 14px;
@@ -317,6 +394,9 @@
     .themeBtn:hover{ transform: translateY(-2px); filter: brightness(1.08); }
     .themeBtn:active{ transform: translateY(0); }
     .themeBtn .dot{ width: 18px; height: 18px; border-radius:999px; border:1px solid rgba(255,255,255,.18); }
+
+    .themeBtn.default .dot{ background: rgba(255,255,255,.22); }
+
     .themeBtn.neon{
       border-color: rgba(0,255,154,.28);
       background:
@@ -325,8 +405,35 @@
         radial-gradient(28px 28px at 60% 75%, rgba(106,124,255,.85), transparent 60%),
         rgba(255,255,255,.05);
     }
-    .themeBtn.default .dot{ background: rgba(255,255,255,.22); }
     .themeBtn.neon .dot{ background: rgba(0,255,154,.55); box-shadow: 0 0 18px rgba(0,255,154,.65); }
+
+    .themeBtn.ocean{
+      border-color: rgba(47,183,255,.28);
+      background:
+        radial-gradient(18px 18px at 30% 30%, rgba(47,183,255,.95), transparent 60%),
+        radial-gradient(24px 24px at 70% 65%, rgba(46,230,166,.85), transparent 60%),
+        rgba(255,255,255,.05);
+    }
+    .themeBtn.ocean .dot{ background: rgba(47,183,255,.55); box-shadow: 0 0 18px rgba(47,183,255,.55); }
+
+    .themeBtn.sunset{
+      border-color: rgba(255,122,89,.30);
+      background:
+        radial-gradient(20px 20px at 35% 35%, rgba(255,122,89,.95), transparent 60%),
+        radial-gradient(26px 26px at 70% 70%, rgba(255,183,3,.85), transparent 60%),
+        rgba(255,255,255,.05);
+    }
+    .themeBtn.sunset .dot{ background: rgba(255,183,3,.55); box-shadow: 0 0 18px rgba(255,183,3,.45); }
+
+    .themeBtn.purple{
+      border-color: rgba(155,123,255,.30);
+      background:
+        radial-gradient(20px 20px at 35% 35%, rgba(155,123,255,.95), transparent 60%),
+        radial-gradient(26px 26px at 70% 70%, rgba(255,77,216,.75), transparent 60%),
+        rgba(255,255,255,.05);
+    }
+    .themeBtn.purple .dot{ background: rgba(155,123,255,.55); box-shadow: 0 0 18px rgba(155,123,255,.55); }
+
     .themeTip{
       position:absolute;
       right: 60px;
@@ -557,6 +664,7 @@
         <div class="cardHeader">
           <h2>Lista da vez</h2>
           <div class="rowRight">
+            <button class="btn" id="btnPreference">Preferência</button>
             <button class="btn warn" id="btnCallNext">Chamar próximo</button>
             <button class="btn" id="btnAddSeller">+ Vendedor</button>
           </div>
@@ -575,7 +683,7 @@
 
           <div class="row" style="justify-content:space-between">
             <div class="tiny">Vendedores fora da fila</div>
-            <div class="tiny">Clique para entrar / sair</div>
+            <div class="tiny">Clique para entrar / retomar</div>
           </div>
           <div class="list" id="poolList" style="margin-top:10px"></div>
         </div>
@@ -957,11 +1065,23 @@
 <!-- THEME DOCK -->
 <div class="themeDock">
   <button class="themeBtn default" id="themeDefault" title="Tema padrão">
-    <span class="themeTip">Tema padrão</span>
+    <span class="themeTip">Padrão</span>
     <span class="dot"></span>
   </button>
   <button class="themeBtn neon" id="themeNeon" title="Tema neon">
-    <span class="themeTip">Tema neon</span>
+    <span class="themeTip">Neon</span>
+    <span class="dot"></span>
+  </button>
+  <button class="themeBtn ocean" id="themeOcean" title="Tema ocean">
+    <span class="themeTip">Ocean</span>
+    <span class="dot"></span>
+  </button>
+  <button class="themeBtn sunset" id="themeSunset" title="Tema sunset">
+    <span class="themeTip">Sunset</span>
+    <span class="dot"></span>
+  </button>
+  <button class="themeBtn purple" id="themePurple" title="Tema purple">
+    <span class="themeTip">Purple</span>
     <span class="dot"></span>
   </button>
 </div>
@@ -1015,6 +1135,16 @@
             <option value="no">Não</option>
           </select>
         </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="dangerZone" style="border-color: rgba(247,201,72,.40); background: rgba(247,201,72,.08);">
+        <div>
+          <div style="font-weight:800">Desativar vendedor (remover da operação)</div>
+          <div class="tiny">Remove da fila/pool e não aparece mais para atendimento. Não apaga histórico.</div>
+        </div>
+        <button class="btn warn" id="btnDeactivateSeller">Desativar vendedor</button>
       </div>
 
       <div class="divider"></div>
@@ -1084,6 +1214,40 @@
   </div>
 </div>
 
+<!-- MODAL PREFERÊNCIA -->
+<div class="modalBack" id="prefBack">
+  <div class="modal">
+    <div class="modalHead">
+      <h3>Preferência do Cliente</h3>
+      <button class="close" id="closePref">Fechar</button>
+    </div>
+    <div class="modalBody">
+      <div class="hint">Selecione o vendedor que o cliente veio procurar. O atendimento inicia na hora.</div>
+      <div class="divider"></div>
+      <div class="list" id="prefList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DESATIVAR VENDEDOR -->
+<div class="modalBack" id="deactBack">
+  <div class="modal">
+    <div class="modalHead">
+      <h3>Desativar Vendedor</h3>
+      <button class="close" id="closeDeact">Fechar</button>
+    </div>
+    <div class="modalBody">
+      <div class="hint">Escolha quem será removido da operação. (Histórico permanece.)</div>
+      <div class="divider"></div>
+      <div class="list" id="deactList"></div>
+      <div class="divider"></div>
+      <div class="noteBox">
+        Dica: desativado = some da fila/pool e não pode ser chamado por preferência.
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
   // ======================
   // PWA register
@@ -1099,7 +1263,7 @@
   // ======================
   // STORAGE + STATE
   // ======================
-  const KEY = "nexxt_v2_goals_no_conv_pwa";
+  const KEY = "nexxt_v3_preference_deactivate_themes";
   const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch { return null; } };
   const save = (s) => localStorage.setItem(KEY, JSON.stringify(s));
   function uid(){ return Math.random().toString(16).slice(2) + Date.now().toString(16); }
@@ -1135,30 +1299,33 @@
   const defaultState = {
     store: { name:"Sua loja", status:"Online", logoDataUrl:"" },
     options: { askValue:true, askPieces:true },
-    ui: { theme: "default" }, // default | neon
+    ui: { theme: "default" }, // default | neon | ocean | sunset | purple
     sellers: [
-      { id: uid(), name:"Erick", photo:"", paused:false },
-      { id: uid(), name:"Camila", photo:"", paused:false },
-      { id: uid(), name:"Mariana", photo:"", paused:false },
+      { id: uid(), name:"Erick", photo:"", paused:false, active:true },
+      { id: uid(), name:"Camila", photo:"", paused:false, active:true },
+      { id: uid(), name:"Mariana", photo:"", paused:false, active:true },
     ],
     queue: [],
     pool: [],
     current: null, // { sellerId, startTs }
     records: [],
-    goalsByMonth: {
-      // "YYYY-MM": {
-      //   monthly: number,
-      //   basePercents: [25,25,25,25],
-      //   weekTargets: [number,number,number,number], // recalculadas
-      //   closedWeeks: { "1": true, ... }
-      // }
-    }
+    goalsByMonth: {}
   };
 
   let state = load() || defaultState;
 
+  // migração defensiva
+  state.ui = state.ui || { theme:"default" };
+  state.options = state.options || { askValue:true, askPieces:true };
+  state.sellers = (state.sellers || []).map(s => ({
+    ...s,
+    active: (s.active === undefined ? true : !!s.active),
+    paused: !!s.paused
+  }));
+
   if(state.pool.length === 0 && state.queue.length === 0){
-    state.pool = state.sellers.map(s => s.id);
+    const actives = state.sellers.filter(s=>s.active).map(s=>s.id);
+    state.pool = actives;
     save(state);
   }
 
@@ -1166,7 +1333,11 @@
   // HELPERS
   // ======================
   const $ = (id) => document.getElementById(id);
-  function getSeller(id){ return state.sellers.find(s => s.id === id); }
+  function getSeller(id){ return state.sellers.find(s => s.id === id) || null; }
+  function isActiveSeller(id){
+    const s = getSeller(id);
+    return !!(s && s.active);
+  }
 
   function parseBRNumber(str){
     if(!str) return 0;
@@ -1189,14 +1360,12 @@
   function remainingDaysInMonthFromToday(yyyyMm){
     const [y,m] = yyyyMm.split("-").map(Number);
     const now = new Date();
-    // se o mês escolhido não é o mês atual, usa todos os dias
     if(now.getFullYear() !== y || (now.getMonth()+1) !== m) return daysInMonth(yyyyMm);
     const total = daysInMonth(yyyyMm);
     const today = now.getDate();
-    return Math.max(1, total - today + 1); // inclui hoje
+    return Math.max(1, total - today + 1);
   }
 
-  // Semana do mês (1-4)
   function weekOfMonth(dateKeyStr){
     const day = Number(dateKeyStr.slice(8,10));
     if(day <= 7) return 1;
@@ -1262,11 +1431,13 @@
   // THEME
   // ======================
   function applyTheme(){
-    document.documentElement.dataset.theme = (state.ui?.theme === "neon") ? "neon" : "default";
+    const t = state.ui?.theme || "default";
+    const allowed = ["default","neon","ocean","sunset","purple"];
+    document.documentElement.dataset.theme = allowed.includes(t) ? t : "default";
   }
 
   // ======================
-  // FX (fireworks + rocket)
+  // FX
   // ======================
   function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
@@ -1309,16 +1480,6 @@
     r.style.setProperty("--ry1", (- (Math.random()*240+140))+"px");
     fx.appendChild(r);
     setTimeout(()=>r.remove(), 950);
-  }
-
-  function celebrateSale(){
-    const panel = $("attendPanel");
-    const rect = panel.getBoundingClientRect();
-    const x = rect.left + rect.width*0.75;
-    const y = rect.top + rect.height*0.35;
-    rocketFx(x, y);
-    burstFx(x+20, y-20);
-    setTimeout(()=>burstFx(x-40, y-60), 120);
   }
 
   // ======================
@@ -1375,6 +1536,9 @@
     const q = $("queueList");
     q.innerHTML = "";
 
+    // limpa ids inativos que ficaram perdidos
+    state.queue = state.queue.filter(id => isActiveSeller(id));
+
     if(state.queue.length === 0){
       const empty = document.createElement("div");
       empty.className = "hint";
@@ -1387,7 +1551,7 @@
 
     state.queue.forEach((sid, idx) => {
       const s = getSeller(sid);
-      if(!s) return;
+      if(!s || !s.active) return;
 
       const st = sellerStatsDay(sid, tk);
 
@@ -1425,6 +1589,11 @@
     const p = $("poolList");
     p.innerHTML = "";
 
+    // pool só com ativos
+    state.pool = state.pool.filter(id => isActiveSeller(id) && !state.queue.includes(id));
+    // evita duplicados
+    state.pool = Array.from(new Set(state.pool));
+
     if(state.pool.length === 0){
       const empty = document.createElement("div");
       empty.className = "hint";
@@ -1435,7 +1604,7 @@
 
     state.pool.forEach((sid) => {
       const s = getSeller(sid);
-      if(!s) return;
+      if(!s || !s.active) return;
 
       const item = document.createElement("div");
       item.className = "item";
@@ -1445,21 +1614,24 @@
           <div class="avatar">${s.photo ? `<img src="${s.photo}">` : `<span style="color:var(--muted);font-weight:900">${(s.name||"?")[0].toUpperCase()}</span>`}</div>
           <div class="nameBlock">
             <div class="name">${s.name}</div>
-            <div class="meta">Clique para entrar na fila</div>
+            <div class="meta">${s.paused ? "Clique para retomar e voltar para a fila" : "Clique para entrar na fila"}</div>
           </div>
         </div>
         <span class="tag ${s.paused ? "warn":""}">${s.paused ? "Pausado" : "Fora"}</span>
       `;
+
       item.addEventListener("click", ()=>{
-        if(s.paused){
-          alert("Esse vendedor está pausado. Retome pelo gestor para voltar.");
-          return;
-        }
+        // ✅ Correção pedida: pausado não trava mais.
+        // Ao clicar: retoma e entra na fila.
+        if(s.paused) s.paused = false;
+
         state.pool = state.pool.filter(x => x !== sid);
-        state.queue.push(sid);
+        if(!state.queue.includes(sid)) state.queue.push(sid);
+
         save(state);
         renderAll();
       });
+
       p.appendChild(item);
     });
   }
@@ -1476,7 +1648,7 @@
     }
 
     const s = getSeller(state.current.sellerId);
-    if(!s){ state.current = null; save(state); renderAll(); return; }
+    if(!s || !s.active){ state.current = null; save(state); renderAll(); return; }
 
     tag.textContent = "Atendendo";
     tag.className = "tag good";
@@ -1584,7 +1756,10 @@
       $("nosoldFields").style.display = "none";
       $("btnSold").disabled = true;
       $("btnNoSold").disabled = true;
-      celebrateSale();
+
+      const rect = panel.getBoundingClientRect();
+      rocketFx(rect.left + rect.width*0.72, rect.top + rect.height*0.30);
+      burstFx(rect.left + rect.width*0.75, rect.top + rect.height*0.35);
     });
 
     $("btnNoSold").addEventListener("click", ()=>{
@@ -1606,6 +1781,136 @@
     $("btnFinalize").addEventListener("click", ()=>{
       finalizeCurrent(outcome);
     });
+  }
+
+  // ======================
+  // PREFERÊNCIA
+  // ======================
+  function openModal(backEl){ backEl.style.display = "flex"; }
+  function closeModal(backEl){ backEl.style.display = "none"; }
+
+  function renderPreferenceModal(){
+    const list = $("prefList");
+    list.innerHTML = "";
+
+    if(state.current){
+      list.innerHTML = `<div class="hint">Já existe alguém em atendimento. Finalize antes de usar Preferência.</div>`;
+      return;
+    }
+
+    const actives = state.sellers.filter(s=>s.active);
+    if(actives.length === 0){
+      list.innerHTML = `<div class="hint">Sem vendedores ativos.</div>`;
+      return;
+    }
+
+    actives.forEach((s)=>{
+      const item = document.createElement("div");
+      item.className = "item";
+      item.style.cursor = "pointer";
+      item.innerHTML = `
+        <div class="leftItem">
+          <div class="avatar">${s.photo ? `<img src="${s.photo}">` : `<span style="color:var(--muted);font-weight:900">${(s.name||"?")[0].toUpperCase()}</span>`}</div>
+          <div class="nameBlock">
+            <div class="name">${s.name}</div>
+            <div class="meta">${s.paused ? "Pausado — ao selecionar ele será retomado" : "Selecionar para atender agora"}</div>
+          </div>
+        </div>
+        <span class="tag">Preferência</span>
+      `;
+
+      item.addEventListener("click", ()=>{
+        startPreferenceAttendance(s.id);
+        closeModal($("prefBack"));
+      });
+
+      list.appendChild(item);
+    });
+  }
+
+  function startPreferenceAttendance(sid){
+    if(state.current){
+      alert("Já existe alguém em atendimento. Finalize antes de usar Preferência.");
+      return;
+    }
+    const s = getSeller(sid);
+    if(!s || !s.active){
+      alert("Vendedor inválido/inativo.");
+      return;
+    }
+
+    // retoma se estava pausado
+    if(s.paused) s.paused = false;
+
+    // remove de onde estiver
+    state.queue = state.queue.filter(x=>x!==sid);
+    state.pool  = state.pool.filter(x=>x!==sid);
+
+    // inicia atendimento
+    state.current = { sellerId: sid, startTs: nowTs() };
+    save(state);
+    renderAll();
+  }
+
+  // ======================
+  // DESATIVAR VENDEDOR
+  // ======================
+  function renderDeactivateModal(){
+    const list = $("deactList");
+    list.innerHTML = "";
+
+    const actives = state.sellers.filter(s=>s.active);
+    if(actives.length === 0){
+      list.innerHTML = `<div class="hint">Sem vendedores ativos para desativar.</div>`;
+      return;
+    }
+
+    actives.forEach((s)=>{
+      const item = document.createElement("div");
+      item.className = "item";
+      item.innerHTML = `
+        <div class="leftItem">
+          <div class="avatar">${s.photo ? `<img src="${s.photo}">` : `<span style="color:var(--muted);font-weight:900">${(s.name||"?")[0].toUpperCase()}</span>`}</div>
+          <div class="nameBlock">
+            <div class="name">${s.name}</div>
+            <div class="meta">Remover da operação (fila/pool/preferência)</div>
+          </div>
+        </div>
+        <button class="btn bad" data-deact="${s.id}">Desativar</button>
+      `;
+      list.appendChild(item);
+    });
+
+    list.querySelectorAll("button[data-deact]").forEach(btn=>{
+      btn.addEventListener("click", (e)=>{
+        const sid = e.currentTarget.dataset.deact;
+        deactivateSeller(sid);
+      });
+    });
+  }
+
+  function deactivateSeller(sid){
+    const s = getSeller(sid);
+    if(!s || !s.active) return;
+
+    if(!confirm(`Desativar "${s.name}"? Ele vai sumir da operação.`)) return;
+
+    s.active = false;
+    s.paused = true;
+
+    // remove de filas
+    state.queue = state.queue.filter(x=>x!==sid);
+    state.pool  = state.pool.filter(x=>x!==sid);
+
+    // se estiver em atendimento, encerra atendimento (sem registro)
+    if(state.current && state.current.sellerId === sid){
+      state.current = null;
+    }
+
+    save(state);
+    renderAll();
+    closeModal($("deactBack"));
+    alert("Vendedor desativado ✅");
   }
 
   // ======================
@@ -1806,7 +2111,7 @@
   }
 
   // ======================
-  // GOALS (auto redistribuição)
+  // GOALS (mantido igual ao seu)
   // ======================
   function getGoalsForMonth(mk){
     if(!state.goalsByMonth) state.goalsByMonth = {};
@@ -1815,58 +2120,45 @@
         monthly: 0,
         basePercents: [25,25,25,25],
         weekTargets: [0,0,0,0],
-        closedWeeks: {} // {"1":true}
+        closedWeeks: {}
       };
     }
-    // migração defensiva
     const g = state.goalsByMonth[mk];
     if(!g.basePercents) g.basePercents = [25,25,25,25];
     if(!g.weekTargets) g.weekTargets = [0,0,0,0];
     if(!g.closedWeeks) g.closedWeeks = {};
     return g;
   }
-
   function sum(arr){ return arr.reduce((a,b)=>a+Number(b||0),0); }
-
   function getMonthRevenueSold(mk){
     const soldMonth = state.records.filter(r => r.monthKey === mk && r.outcome==="sold");
     return soldMonth.reduce((s,r)=> s + Number(r.value||0), 0);
   }
-
   function autoRedistributeGoals(mk){
     const g = getGoalsForMonth(mk);
-
     const monthly = Number(g.monthly||0);
     const done = getMonthRevenueSold(mk);
-
     const remaining = Math.max(0, monthly - done);
 
-    // semanas que ainda contam (não fechadas)
     const openWeeks = [1,2,3,4].filter(w => !g.closedWeeks[String(w)]);
     const base = g.basePercents.map(p=> Number(p||0));
-
-    // soma % somente das abertas
     const sumOpenBase = sum(openWeeks.map(w=> base[w-1]));
 
-    // se não tem porcentagem válida, divide igual nas abertas
     const normalized = [0,0,0,0];
     if(openWeeks.length === 0){
-      // tudo fechado -> mantém targets
+      // tudo fechado
     } else if(sumOpenBase <= 0){
       openWeeks.forEach(w => normalized[w-1] = 100/openWeeks.length);
     } else {
       openWeeks.forEach(w => normalized[w-1] = (base[w-1]/sumOpenBase)*100);
     }
 
-    // targets: semanas fechadas mantém o que já estava; abertas recebem a redistribuição do restante
     const targets = [...g.weekTargets];
     openWeeks.forEach(w=>{
       targets[w-1] = remaining * (normalized[w-1]/100);
     });
-
     g.weekTargets = targets;
 
-    // diária AUTO: baseado nos dias restantes do mês (se for mês atual). Se não for, usa total dias.
     const daysRemain = remainingDaysInMonthFromToday(mk);
     const daily = (remaining / Math.max(1, daysRemain));
 
@@ -1880,31 +2172,26 @@
     $("goalMonth").value = mk;
     $("goalMonthly").value = g.monthly ? String(g.monthly).replace(".", ",") : "";
 
-    // base percents
     $("pW1").value = String(g.basePercents?.[0] ?? 25).replace(".", ",");
     $("pW2").value = String(g.basePercents?.[1] ?? 25).replace(".", ",");
     $("pW3").value = String(g.basePercents?.[2] ?? 25).replace(".", ",");
     $("pW4").value = String(g.basePercents?.[3] ?? 25).replace(".", ",");
 
-    // auto redistribui (sempre que abrir metas)
     const { normalizedPercents, daily } = autoRedistributeGoals(mk);
 
     $("goalDaily").value = String((daily||0).toFixed(2)).replace(".", ",");
 
-    // metas semana (recalculadas)
     $("goalW1").value = formatMoney(g.weekTargets[0]||0);
     $("goalW2").value = formatMoney(g.weekTargets[1]||0);
     $("goalW3").value = formatMoney(g.weekTargets[2]||0);
     $("goalW4").value = formatMoney(g.weekTargets[3]||0);
 
-    // percents recalculadas (abertas) / fechadas vira "Fechada"
     [1,2,3,4].forEach(w=>{
       const closed = !!g.closedWeeks[String(w)];
       const v = closed ? "Fechada" : (normalizedPercents[w-1]||0).toFixed(1) + "%";
       $("rpW"+w).value = v;
     });
 
-    // semana atual
     const today = todayKey();
     const cw = weekOfMonth(today);
     $("goalCurrentWeek").value = "Semana " + cw;
@@ -1933,7 +2220,6 @@
     const monthlyTarget = Number(g.monthly||0);
     const weeklyTarget = Number(g.weekTargets?.[currentWeek-1] || 0);
 
-    // diária auto baseada no restante
     const { remaining, daily } = autoRedistributeGoals(mk);
     const dailyTarget = Number(daily||0);
 
@@ -1953,7 +2239,6 @@
     $("barWeekly").style.width = (weeklyPct || 0) + "%";
     $("barMonthly").style.width = (monthlyPct || 0) + "%";
 
-    // KPIs metas
     const el = $("kpisGoals");
     el.innerHTML = "";
     const cards = [
@@ -1969,7 +2254,6 @@
       el.appendChild(div);
     }
 
-    // atualiza semana atual e flag
     const cw = weekOfMonth(todayKey());
     $("goalCurrentWeek").value = "Semana " + cw;
     $("goalWeekClosed").value = g.closedWeeks[String(cw)] ? "Sim" : "Não";
@@ -1987,7 +2271,6 @@
       parseBRNumber($("pW4").value),
     ];
 
-    // Redistribui já ao salvar
     autoRedistributeGoals(mk);
     state.goalsByMonth[mk] = g;
     save(state);
@@ -2027,7 +2310,7 @@
   }
 
   // ======================
-  // META RANK (lua)
+  // META RANK (mantido igual ao seu)
   // ======================
   function renderMetaRank(){
     const mk = $("metaRankMonth").value || monthKey();
@@ -2167,7 +2450,7 @@
   }
 
   // ======================
-  // NÃO CONVERTIDOS (análise)
+  // NÃO CONVERTIDOS (mantido igual ao seu)
   // ======================
   function getNoConvSelection(){
     const d = $("ncDate").value || todayKey();
@@ -2213,7 +2496,6 @@
     $("convHint").textContent = total>0 ? `Convertidos: ${soldPct.toFixed(1)}%` : "—";
     $("noConvHint").textContent = total>0 ? `Não convertidos: ${nosPct.toFixed(1)}%` : "—";
 
-    // KPIs
     const rev = sold.reduce((s,r)=> s+Number(r.value||0), 0);
     const kpis = $("ncKpis");
     kpis.innerHTML = "";
@@ -2230,7 +2512,6 @@
       kpis.appendChild(div);
     }
 
-    // Tabelas
     const reasons = countBy(nos, r=> r.noSale?.reason || "(sem motivo)");
     const items   = countBy(nos, r=> r.noSale?.itemType || "(sem peça)");
     const gender  = countBy(nos, r=> r.noSale?.gender || "(sem gênero)");
@@ -2258,7 +2539,7 @@
   }
 
   // ======================
-  // EXPORT
+  // EXPORT (mantido)
   // ======================
   function downloadBlob(content, filename, mime){
     const blob = new Blob([content], {type: mime});
@@ -2368,11 +2649,16 @@
       const s = getSeller(sid);
       if(!s) return;
       s.paused = !s.paused;
+
+      // se pausou: tira da fila e joga no pool
       if(s.paused){
         state.queue = state.queue.filter(x=>x!==sid);
         if(!state.pool.includes(sid)) state.pool.push(sid);
       } else {
+        // se retomou: manda pro pool (e ele clica pra voltar) ou já volta pra fila?
+        // preferi deixar no pool para controle do gestor; mas agora o clique no pool resolve.
         if(!state.pool.includes(sid)) state.pool.push(sid);
+        state.queue = state.queue.filter(x=>x!==sid);
       }
     }
 
@@ -2390,20 +2676,30 @@
       alert("Já existe alguém em atendimento. Finalize antes de chamar o próximo.");
       return;
     }
+
+    // pular inativos/pausados
     while(state.queue.length > 0){
       const sid = state.queue[0];
       const s = getSeller(sid);
-      if(s && s.paused){
+
+      if(!s || !s.active){
+        state.queue.shift();
+        continue;
+      }
+
+      if(s.paused){
         state.queue.shift();
         if(!state.pool.includes(sid)) state.pool.push(sid);
         continue;
       }
+
       state.current = { sellerId: sid, startTs: nowTs() };
       state.queue.shift();
       save(state);
       renderAll();
       return;
     }
+
     alert("Fila vazia. Adicione vendedores no rodapé.");
   }
 
@@ -2416,7 +2712,7 @@
 
     const sid = state.current.sellerId;
     const s = getSeller(sid);
-    if(!s){ state.current=null; save(state); renderAll(); return; }
+    if(!s || !s.active){ state.current=null; save(state); renderAll(); return; }
 
     const endTs = nowTs();
     const tk = todayKey(new Date(state.current.startTs));
@@ -2452,38 +2748,29 @@
     });
 
     if(outcome==="sold"){
-      const rect = document.body.getBoundingClientRect();
       burstFx(window.innerWidth*0.72, window.innerHeight*0.30);
     }
 
     state.current = null;
 
-    if(!s.paused) state.queue.push(sid);
-    else if(!state.pool.includes(sid)) state.pool.push(sid);
+    // volta pra fila se estiver ativo e não pausado
+    if(s.active && !s.paused){
+      state.queue.push(sid);
+    } else if(s.active && !state.pool.includes(sid)){
+      state.pool.push(sid);
+    }
 
     save(state);
     renderAll();
 
-    // metas e análises sempre atualizam
     if($("viewMetas").style.display !== "none") renderGoals();
     if($("viewMetasRank").style.display !== "none") renderMetaRank();
     if($("viewNoConv").style.display !== "none") renderNoConv();
   }
 
   // ======================
-  // MODAIS + UTIL
+  // UI / NAV
   // ======================
-  function openModal(backEl){ backEl.style.display = "flex"; }
-  function closeModal(backEl){ backEl.style.display = "none"; }
-  function fileToDataUrl(file){
-    return new Promise((resolve, reject)=>{
-      const reader = new FileReader();
-      reader.onload = ()=> resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
-
   function renderAll(){
     applyTheme();
     renderHeader();
@@ -2497,9 +2784,6 @@
     if($("viewNoConv").style.display !== "none") renderNoConv();
   }
 
-  // ======================
-  // UI EVENTS
-  // ======================
   $("btnCallNext").addEventListener("click", callNext);
 
   // Tabs/views
@@ -2552,13 +2836,12 @@
   $("btnExportCSV").addEventListener("click", exportCSV);
   $("btnExportJSON").addEventListener("click", exportJSON);
 
-  // Goals inputs (auto)
+  // Goals inputs
   $("goalMonth").addEventListener("change", renderGoals);
   $("goalMonthly").addEventListener("input", ()=> { saveGoalsDraftAndAuto(); });
   ["pW1","pW2","pW3","pW4"].forEach(id=>{
     $(id).addEventListener("input", ()=> { saveGoalsDraftAndAuto(); });
   });
-
   function saveGoalsDraftAndAuto(){
     const mk = $("goalMonth").value || monthKey();
     const g = getGoalsForMonth(mk);
@@ -2585,7 +2868,6 @@
   // Meta Rank
   $("btnRefreshMetaRank").addEventListener("click", renderMetaRank);
   $("metaRankMonth").addEventListener("change", renderMetaRank);
-  $("metaRankMonthly").addEventListener("input", ()=> {});
   $("metaRankMode").addEventListener("change", renderMetaRank);
 
   // Não convertidos
@@ -2595,18 +2877,22 @@
   $("ncMonth").addEventListener("change", renderNoConv);
 
   // Theme buttons
-  $("themeDefault").addEventListener("click", ()=>{
-    state.ui.theme = "default";
-    save(state);
-    renderAll();
-  });
-  $("themeNeon").addEventListener("click", ()=>{
-    state.ui.theme = "neon";
-    save(state);
-    renderAll();
-  });
+  $("themeDefault").addEventListener("click", ()=>{ state.ui.theme = "default"; save(state); renderAll(); });
+  $("themeNeon").addEventListener("click", ()=>{ state.ui.theme = "neon"; save(state); renderAll(); });
+  $("themeOcean").addEventListener("click", ()=>{ state.ui.theme = "ocean"; save(state); renderAll(); });
+  $("themeSunset").addEventListener("click", ()=>{ state.ui.theme = "sunset"; save(state); renderAll(); });
+  $("themePurple").addEventListener("click", ()=>{ state.ui.theme = "purple"; save(state); renderAll(); });
 
   // Settings modal
+  function fileToDataUrl(file){
+    return new Promise((resolve, reject)=>{
+      const reader = new FileReader();
+      reader.onload = ()=> resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
   $("btnSettings").addEventListener("click", ()=>{
     $("storeName").value = state.store.name || "";
     $("storeStatus").value = state.store.status || "Online";
@@ -2656,6 +2942,14 @@
     alert("Reset total concluído.");
   });
 
+  // Desativar vendedor modal
+  $("btnDeactivateSeller").addEventListener("click", ()=>{
+    renderDeactivateModal();
+    openModal($("deactBack"));
+  });
+  $("closeDeact").addEventListener("click", ()=> closeModal($("deactBack")));
+  $("deactBack").addEventListener("click", (e)=>{ if(e.target === $("deactBack")) closeModal($("deactBack")); });
+
   // Add seller modal
   $("btnAddSeller").addEventListener("click", ()=>{
     $("sellerName").value = "";
@@ -2672,7 +2966,7 @@
     const file = $("sellerPhoto").files?.[0];
     if(file) photo = await fileToDataUrl(file);
     const id = uid();
-    state.sellers.push({ id, name, photo, paused:false });
+    state.sellers.push({ id, name, photo, paused:false, active:true });
     state.pool.push(id);
     save(state);
     renderAll();
@@ -2686,6 +2980,14 @@
   });
   $("closeRanking").addEventListener("click", ()=> closeModal($("rankingBack")));
   $("rankingBack").addEventListener("click", (e)=>{ if(e.target === $("rankingBack")) closeModal($("rankingBack")); });
+
+  // Preferência modal
+  $("btnPreference").addEventListener("click", ()=>{
+    renderPreferenceModal();
+    openModal($("prefBack"));
+  });
+  $("closePref").addEventListener("click", ()=> closeModal($("prefBack")));
+  $("prefBack").addEventListener("click", (e)=>{ if(e.target === $("prefBack")) closeModal($("prefBack")); });
 
   // Timer
   setInterval(()=>{
@@ -2711,3 +3013,4 @@
 </script>
 </body>
 </html>
+
