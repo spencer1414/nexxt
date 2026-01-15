@@ -1,0 +1,2713 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NEXXT — Lista da Vez</title>
+
+  <!-- PWA (instalar como app) -->
+  <meta name="theme-color" content="#0b0f14">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="NEXXT">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icon.svg">
+  <link rel="apple-touch-icon" href="./icon.svg">
+
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(0,0,0,.22);
+      --text:#e7eefc;
+      --muted:#9db0d0;
+      --line:rgba(255,255,255,.10);
+
+      --good:#29e07a;
+      --bad:#ff4d4d;
+      --warn:#f7c948;
+      --brand:#62a8ff;
+
+      --shadow: 0 16px 40px rgba(0,0,0,.35);
+      --radius:16px;
+
+      --grad: radial-gradient(1200px 600px at 20% 0%, rgba(41,224,122,.12), transparent 60%),
+              radial-gradient(900px 500px at 90% 10%, rgba(69,140,255,.12), transparent 55%),
+              var(--bg);
+
+      --btnGrad: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      --btnBorder: var(--line);
+    }
+
+    /* THEME: NEON */
+    [data-theme="neon"]{
+      --bg:#05060b;
+      --text:#f6fbff;
+      --muted:#b7c3ff;
+      --line:rgba(255,255,255,.14);
+
+      --good:#00ff9a;
+      --bad:#ff3b7a;
+      --warn:#ffd166;
+      --brand:#6a7cff;
+
+      --panel: rgba(255,255,255,.07);
+      --panel2: rgba(0,0,0,.30);
+
+      --grad:
+        radial-gradient(900px 520px at 12% 0%, rgba(0,255,154,.16), transparent 60%),
+        radial-gradient(800px 520px at 92% 10%, rgba(255,59,122,.14), transparent 55%),
+        radial-gradient(700px 520px at 52% 30%, rgba(106,124,255,.12), transparent 60%),
+        linear-gradient(180deg, #05060b, #080a12);
+
+      --btnGrad: linear-gradient(180deg, rgba(106,124,255,.22), rgba(0,255,154,.12));
+      --btnBorder: rgba(0,255,154,.28);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: var(--grad);
+      color:var(--text);
+      overflow-x:hidden;
+    }
+
+    header{
+      position: sticky; top:0; z-index:10;
+      background: rgba(11,15,20,.82);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--line);
+    }
+    [data-theme="neon"] header{ background: rgba(5,6,11,.74); }
+
+    .wrap{max-width:1200px; margin:0 auto; padding:14px 16px;}
+    .topbar{display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;}
+    .brand{display:flex; align-items:center; gap:12px;}
+    .logoBox{
+      width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,.06);
+      border:1px solid var(--line); display:grid; place-items:center; overflow:hidden;
+    }
+    .logoBox img{width:100%;height:100%;object-fit:cover}
+    .brand h1{margin:0; font-size:18px; letter-spacing:.12em;}
+    .sub{font-size:12px; color:var(--muted); margin-top:2px}
+    .rightTop{display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;}
+    .chip{
+      padding:8px 10px; border-radius:999px; background:rgba(255,255,255,.06);
+      border:1px solid var(--line); color:var(--muted); font-size:12px;
+      display:flex; gap:8px; align-items:center;
+    }
+    .chip b{color:var(--text); font-weight:600}
+
+    button, input, select{font: inherit;}
+    .btn{
+      background: var(--btnGrad);
+      border:1px solid var(--btnBorder);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      box-shadow: 0 10px 22px rgba(0,0,0,.2);
+      transition: transform .08s ease, filter .12s ease;
+    }
+    .btn:hover{transform: translateY(-1px); filter: brightness(1.05);}
+    .btn:active{transform: translateY(0px)}
+    .btn.good{background: linear-gradient(180deg, rgba(41,224,122,.22), rgba(41,224,122,.10)); border-color:rgba(41,224,122,.35)}
+    .btn.bad{background: linear-gradient(180deg, rgba(255,77,77,.22), rgba(255,77,77,.10)); border-color:rgba(255,77,77,.35)}
+    .btn.warn{background: linear-gradient(180deg, rgba(247,201,72,.22), rgba(247,201,72,.10)); border-color:rgba(247,201,72,.35)}
+    .btn.ghost{background: rgba(255,255,255,.06); border: 1px solid var(--line); box-shadow:none}
+
+    [data-theme="neon"] .btn.good{background: linear-gradient(180deg, rgba(0,255,154,.22), rgba(0,255,154,.10)); border-color:rgba(0,255,154,.35)}
+    [data-theme="neon"] .btn.bad{background: linear-gradient(180deg, rgba(255,59,122,.22), rgba(255,59,122,.10)); border-color:rgba(255,59,122,.35)}
+    [data-theme="neon"] .btn.warn{background: linear-gradient(180deg, rgba(255,209,102,.22), rgba(255,209,102,.10)); border-color:rgba(255,209,102,.35)}
+
+    .tabs{display:flex; gap:8px; flex-wrap:wrap; padding:10px 0 2px 0;}
+    .tab{
+      padding:8px 10px; border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.05);
+      color: var(--muted);
+      cursor:pointer;
+      font-size:12px;
+    }
+    .tab.active{
+      color: var(--text);
+      background: rgba(41,224,122,.12);
+      border-color: rgba(41,224,122,.35);
+    }
+    [data-theme="neon"] .tab.active{
+      background: rgba(0,255,154,.14);
+      border-color: rgba(0,255,154,.35);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:14px;
+      margin-top:10px;
+    }
+    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
+    .card{
+      background: linear-gradient(180deg, var(--panel), rgba(255,255,255,.03));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .cardHeader{
+      padding:14px;
+      border-bottom:1px solid var(--line);
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      flex-wrap:wrap;
+    }
+    .cardHeader h2{margin:0; font-size:14px; letter-spacing:.06em; text-transform:uppercase; color:#cfe0ff}
+    .cardBody{padding:14px}
+    .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+    .rowRight{display:flex; gap:10px; align-items:center; justify-content:flex-end; flex-wrap:wrap}
+    .field{display:flex; flex-direction:column; gap:6px; min-width: 220px;}
+    .field label{font-size:12px; color:var(--muted)}
+    .field input, .field select{
+      background: rgba(0,0,0,.25);
+      border:1px solid var(--line);
+      color:var(--text);
+      border-radius:12px;
+      padding:10px 12px;
+      outline:none;
+    }
+    .field input::placeholder{color: rgba(231,238,252,.45)}
+    .list{display:flex; flex-direction:column; gap:10px;}
+    .item{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+      padding:10px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background: var(--panel2);
+    }
+    .leftItem{display:flex; align-items:center; gap:10px; min-width:0}
+    .avatar{
+      width:44px; height:44px; border-radius:14px;
+      background: rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      display:grid; place-items:center; overflow:hidden;
+      flex:0 0 auto;
+    }
+    .avatar img{width:100%; height:100%; object-fit:cover}
+    .nameBlock{min-width:0}
+    .name{font-weight:650; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    .meta{font-size:12px; color:var(--muted)}
+    .pos{
+      width:28px;height:28px;border-radius:999px;background: rgba(41,224,122,.14);
+      border:1px solid rgba(41,224,122,.35);
+      display:grid; place-items:center; color:var(--good); font-weight:800; font-size:12px;
+      flex:0 0 auto;
+    }
+    [data-theme="neon"] .pos{ background: rgba(0,255,154,.14); border-color: rgba(0,255,154,.35); }
+
+    .tag{
+      font-size:12px; padding:6px 10px; border-radius:999px;
+      background: rgba(255,255,255,.06); border:1px solid var(--line); color:var(--muted);
+    }
+    .tag.good{background: rgba(41,224,122,.14); border-color: rgba(41,224,122,.35); color: #b8ffd6}
+    .tag.bad{background: rgba(255,77,77,.14); border-color: rgba(255,77,77,.35); color: #ffd0d0}
+    .tag.warn{background: rgba(247,201,72,.14); border-color: rgba(247,201,72,.35); color: #ffefc0}
+
+    .divider{height:1px; background: var(--line); margin:12px 0}
+    .actions{display:flex; gap:10px; flex-wrap:wrap}
+    .big{display:grid; grid-template-columns: 1fr 1fr; gap:10px;}
+    @media (max-width: 520px){ .big{grid-template-columns: 1fr} }
+
+    .kpis{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap:10px;
+    }
+    @media (max-width: 980px){ .kpis{grid-template-columns: repeat(2, minmax(0, 1fr));} }
+    .kpi{
+      padding:12px;
+      border-radius: 14px;
+      border:1px solid var(--line);
+      background: var(--panel2);
+    }
+    .kpi .t{font-size:12px; color:var(--muted)}
+    .kpi .v{font-size:18px; font-weight:800; margin-top:4px}
+    .kpi .v.good{color: var(--good)}
+
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.18);
+    }
+    th, td{
+      padding:10px 10px;
+      border-bottom:1px solid var(--line);
+      font-size:12px;
+      text-align:left;
+      color: var(--text);
+      vertical-align: middle;
+    }
+    th{color:#cfe0ff; text-transform:uppercase; letter-spacing:.06em; font-size:11px;}
+    tr:last-child td{border-bottom:none}
+
+    /* MODALS */
+    .modalBack{
+      position:fixed; inset:0; background: rgba(0,0,0,.55);
+      display:none; align-items:center; justify-content:center; padding:18px;
+      z-index: 50;
+    }
+    .modal{
+      width:min(960px, 100%);
+      border-radius: 18px;
+      border:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(17,24,38,.96), rgba(12,16,26,.96));
+      box-shadow: 0 25px 80px rgba(0,0,0,.55);
+      overflow:hidden;
+    }
+    [data-theme="neon"] .modal{
+      background: linear-gradient(180deg, rgba(12,14,26,.96), rgba(5,6,11,.96));
+    }
+    .modalHead{padding:14px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+    .modalHead h3{margin:0; font-size:14px; letter-spacing:.06em; text-transform:uppercase; color:#cfe0ff}
+    .close{background:transparent; border:1px solid var(--line); color:var(--text); border-radius:12px; padding:8px 10px; cursor:pointer}
+    .modalBody{padding:14px}
+    .hint{font-size:12px; color:var(--muted)}
+    .dangerZone{
+      padding:12px; border-radius:14px; border:1px dashed rgba(255,77,77,.4);
+      background: rgba(255,77,77,.08);
+      display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    }
+    .tiny{font-size:12px; color:var(--muted)}
+    .noteBox{
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      font-size:12px;
+    }
+
+    /* THEME SWITCHER (right footer/side) */
+    .themeDock{
+      position: fixed;
+      right: 14px;
+      bottom: 14px;
+      display:flex;
+      flex-direction: column;
+      gap:10px;
+      z-index: 60;
+    }
+    .themeBtn{
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.06);
+      box-shadow: 0 14px 30px rgba(0,0,0,.35);
+      cursor:pointer;
+      display:grid;
+      place-items:center;
+      transition: transform .1s ease, filter .12s ease;
+      position: relative;
+      overflow:hidden;
+    }
+    .themeBtn:hover{ transform: translateY(-2px); filter: brightness(1.08); }
+    .themeBtn:active{ transform: translateY(0); }
+    .themeBtn .dot{ width: 18px; height: 18px; border-radius:999px; border:1px solid rgba(255,255,255,.18); }
+    .themeBtn.neon{
+      border-color: rgba(0,255,154,.28);
+      background:
+        radial-gradient(18px 18px at 25% 30%, rgba(0,255,154,.95), transparent 60%),
+        radial-gradient(22px 22px at 70% 30%, rgba(255,59,122,.85), transparent 60%),
+        radial-gradient(28px 28px at 60% 75%, rgba(106,124,255,.85), transparent 60%),
+        rgba(255,255,255,.05);
+    }
+    .themeBtn.default .dot{ background: rgba(255,255,255,.22); }
+    .themeBtn.neon .dot{ background: rgba(0,255,154,.55); box-shadow: 0 0 18px rgba(0,255,154,.65); }
+    .themeTip{
+      position:absolute;
+      right: 60px;
+      white-space:nowrap;
+      padding:6px 10px;
+      border-radius: 999px;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.35);
+      color: var(--muted);
+      font-size: 12px;
+      opacity: 0;
+      transform: translateX(6px);
+      pointer-events:none;
+      transition: .15s ease;
+    }
+    .themeBtn:hover .themeTip{ opacity: 1; transform: translateX(0); }
+
+    /* FX layer */
+    #fxLayer{
+      position: fixed;
+      inset:0;
+      pointer-events:none;
+      z-index: 80;
+      overflow:hidden;
+    }
+    .particle{
+      position:absolute;
+      width:10px; height:10px;
+      border-radius:999px;
+      opacity:.95;
+      transform: translate(-50%,-50%);
+      animation: pop 900ms ease-out forwards;
+      filter: drop-shadow(0 0 10px rgba(255,255,255,.18));
+    }
+    @keyframes pop{
+      0%{ transform: translate(var(--x0), var(--y0)) scale(.5); opacity: 1; }
+      100%{ transform: translate(var(--x1), var(--y1)) scale(0.9); opacity: 0; }
+    }
+    .rocketFly{
+      position:absolute;
+      font-size: 30px;
+      transform: translate(-50%,-50%);
+      animation: rocket 900ms cubic-bezier(.18,.72,.18,1) forwards;
+      filter: drop-shadow(0 0 18px rgba(255,209,102,.2));
+    }
+    @keyframes rocket{
+      0%{ transform: translate(var(--rx0), var(--ry0)) rotate(-10deg) scale(.9); opacity:1; }
+      100%{ transform: translate(var(--rx1), var(--ry1)) rotate(-25deg) scale(1.2); opacity:0; }
+    }
+
+    /* Goal progress bars */
+    .bar{
+      width: 100%;
+      height: 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.22);
+      overflow:hidden;
+    }
+    .bar > i{
+      display:block;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, rgba(41,224,122,.90), rgba(98,168,255,.70));
+      border-right: 1px solid rgba(255,255,255,.2);
+      transition: width .35s ease;
+    }
+    [data-theme="neon"] .bar > i{
+      background: linear-gradient(90deg, rgba(0,255,154,.95), rgba(255,59,122,.65), rgba(106,124,255,.80));
+      box-shadow: 0 0 18px rgba(0,255,154,.16);
+    }
+
+    /* Moon race */
+    .race{
+      position: relative;
+      height: 150px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background:
+        radial-gradient(2px 2px at 12% 18%, rgba(255,255,255,.7), transparent 60%),
+        radial-gradient(2px 2px at 32% 62%, rgba(255,255,255,.55), transparent 60%),
+        radial-gradient(2px 2px at 58% 28%, rgba(255,255,255,.6), transparent 60%),
+        radial-gradient(2px 2px at 76% 52%, rgba(255,255,255,.45), transparent 60%),
+        rgba(0,0,0,.22);
+      overflow:hidden;
+    }
+    .moon{
+      position:absolute;
+      right: 10px;
+      top: 14px;
+      width: 92px; height: 92px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(200,210,230,.65) 45%, rgba(150,160,180,.35) 75%);
+      border: 1px solid rgba(255,255,255,.18);
+      box-shadow: 0 0 30px rgba(255,255,255,.08);
+      display:grid;
+      place-items:center;
+      font-size: 22px;
+      color: rgba(0,0,0,.35);
+      font-weight: 900;
+    }
+    .track{
+      position:absolute;
+      left: 12px;
+      right: 120px;
+      top: 78px;
+      height: 6px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.10);
+    }
+    .rocket{
+      position:absolute;
+      left: 12px;
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      transition: left .5s ease, top .2s ease;
+      will-change: left;
+    }
+    .rocket .pic{
+      width: 28px; height: 28px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.16);
+      overflow:hidden;
+      background: rgba(255,255,255,.06);
+      display:grid; place-items:center;
+      font-weight: 900;
+      color: var(--muted);
+      flex:0 0 auto;
+    }
+    .rocket .pic img{ width:100%; height:100%; object-fit:cover }
+    .rocket .ship{ font-size: 18px; filter: drop-shadow(0 0 16px rgba(255,209,102,.10)); }
+    .rocket .lbl{ font-size: 12px; color: var(--muted); white-space:nowrap; }
+
+    .moonBoom{
+      position:absolute;
+      inset:0;
+      display:none;
+      place-items:center;
+      background: radial-gradient(300px 200px at 85% 40%, rgba(255,209,102,.22), transparent 70%),
+                  radial-gradient(300px 220px at 80% 55%, rgba(255,59,122,.18), transparent 70%),
+                  rgba(0,0,0,.35);
+      text-align:center;
+      padding: 10px;
+    }
+    .moonBoom .title{
+      font-size: 26px;
+      font-weight: 1000;
+      letter-spacing: .10em;
+    }
+    .moonBoom .sub{ margin-top: 6px; color: var(--muted); font-size: 13px; }
+
+    /* Fun compare chart (Convert x Não Convert) */
+    .compare{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 720px){ .compare{grid-template-columns:1fr} }
+    .barCard{
+      padding:12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background: var(--panel2);
+    }
+    .meter{
+      height: 16px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.22);
+      overflow:hidden;
+      margin-top: 8px;
+    }
+    .meter > i{
+      display:block;
+      height:100%;
+      width: 0%;
+      transition: width .45s ease;
+    }
+    .meter.good > i{ background: linear-gradient(90deg, rgba(41,224,122,.95), rgba(98,168,255,.65)); }
+    .meter.bad > i{ background: linear-gradient(90deg, rgba(255,77,77,.90), rgba(255,209,102,.55)); }
+    [data-theme="neon"] .meter.good > i{ background: linear-gradient(90deg, rgba(0,255,154,.95), rgba(106,124,255,.70)); }
+    [data-theme="neon"] .meter.bad > i{ background: linear-gradient(90deg, rgba(255,59,122,.90), rgba(255,209,102,.60)); }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logoBox" id="logoBox" title="Logo da loja">
+          <span style="font-weight:900; color: var(--muted);">N</span>
+        </div>
+        <div>
+          <h1>NEXXT</h1>
+          <div class="sub"><span id="storeNameTop">Sua loja</span> · <span style="opacity:.7">powered by NEXXT</span></div>
+        </div>
+      </div>
+
+      <div class="rightTop">
+        <div class="chip">Status: <b id="statusChip">Online</b></div>
+        <button class="btn" id="btnRanking">Ranking</button>
+        <button class="btn" id="btnData">Dados</button>
+        <button class="btn" id="btnGoals">Metas</button>
+        <button class="btn" id="btnGoalRank">Ranking Metas</button>
+        <button class="btn" id="btnNoConv">Não Convertidos</button>
+        <button class="btn" id="btnSettings">Config</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" id="tabOps">Operação</button>
+      <button class="tab" id="tabDados">Dados</button>
+      <button class="tab" id="tabMetas">Metas</button>
+      <button class="tab" id="tabMetasRank">Ranking Metas</button>
+      <button class="tab" id="tabNoConv">Não Convertidos</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- OPERACAO -->
+  <div id="viewOps">
+    <div class="grid">
+      <section class="card">
+        <div class="cardHeader">
+          <h2>Lista da vez</h2>
+          <div class="rowRight">
+            <button class="btn warn" id="btnCallNext">Chamar próximo</button>
+            <button class="btn" id="btnAddSeller">+ Vendedor</button>
+          </div>
+        </div>
+
+        <div class="cardBody">
+          <div class="hint">Regra NEXXT: atendimento só termina quando você <b>finalizar</b> (vendeu / não vendeu). Isso garante conversão real.</div>
+          <div class="divider"></div>
+
+          <div class="kpis" id="kpis"></div>
+
+          <div class="divider"></div>
+          <div class="list" id="queueList"></div>
+
+          <div class="divider"></div>
+
+          <div class="row" style="justify-content:space-between">
+            <div class="tiny">Vendedores fora da fila</div>
+            <div class="tiny">Clique para entrar / sair</div>
+          </div>
+          <div class="list" id="poolList" style="margin-top:10px"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="cardHeader">
+          <h2>Em atendimento</h2>
+          <div class="rowRight"><span class="tag" id="attendTag">Nenhum</span></div>
+        </div>
+        <div class="cardBody" id="attendPanel">
+          <div class="hint">Chame o próximo para iniciar um atendimento.</div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- DADOS -->
+  <div id="viewDados" style="display:none">
+    <section class="card">
+      <div class="cardHeader">
+        <h2>Banco de Dados</h2>
+        <div class="rowRight">
+          <button class="btn" id="btnExportCSV">Exportar CSV</button>
+          <button class="btn" id="btnExportJSON">Exportar JSON</button>
+        </div>
+      </div>
+
+      <div class="cardBody">
+        <div class="row">
+          <div class="field">
+            <label>Data (ranking do dia)</label>
+            <input id="dataDate" type="date" />
+          </div>
+
+          <div class="field">
+            <label>Mês (ranking do mês)</label>
+            <input id="dataMonth" type="month" />
+          </div>
+
+          <div class="field">
+            <label>Visão</label>
+            <select id="dataView">
+              <option value="dayRank">Ranking do dia (data escolhida)</option>
+              <option value="daily">Conversão por dia (Loja)</option>
+              <option value="sellerDaily">Conversão por dia (Vendedor)</option>
+              <option value="monthRank" selected>Ranking do mês (mês escolhido)</option>
+              <option value="raw">Registros (atendimentos do mês escolhido)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="kpis" id="kpisData"></div>
+
+        <div class="divider"></div>
+
+        <div id="dataTableWrap"></div>
+
+        <div class="divider"></div>
+
+        <div class="hint">
+          • <b>Conversão</b> = vendas ÷ atendimentos<br/>
+          • <b>P.A. por venda</b> = peças ÷ vendas<br/>
+          • <b>P.A. por atendimento</b> = peças ÷ atendimentos
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- METAS -->
+  <div id="viewMetas" style="display:none">
+    <section class="card">
+      <div class="cardHeader">
+        <h2>Metas</h2>
+        <div class="rowRight">
+          <button class="btn" id="btnAutoRedistribute">Auto redistribuir</button>
+          <button class="btn good" id="btnSaveGoals">Salvar metas</button>
+        </div>
+      </div>
+
+      <div class="cardBody">
+        <div class="noteBox">
+          ✅ Ao digitar a <b>meta mensal</b> e as <b>% por semana</b>, o NEXXT calcula automaticamente:
+          <b>meta diária</b> (baseado nos dias restantes do mês) e <b>metas das semanas</b>.
+          <br/>✅ Ao clicar em <b>Fechar Semana</b>, o sistema redistribui o que falta para as semanas restantes.
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="row">
+          <div class="field">
+            <label>Mês da meta</label>
+            <input id="goalMonth" type="month" />
+          </div>
+          <div class="field">
+            <label>Meta mensal (R$)</label>
+            <input id="goalMonthly" inputmode="decimal" placeholder="Ex: 120000,00" />
+          </div>
+          <div class="field">
+            <label>Meta diária (AUTO) (R$)</label>
+            <input id="goalDaily" inputmode="decimal" placeholder="Auto" disabled />
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <h3 style="margin:0 0 8px 0; font-size:14px; letter-spacing:.06em; text-transform:uppercase; color:#cfe0ff">Distribuição semanal</h3>
+
+        <div class="row" style="gap:12px">
+          <div class="field" style="min-width:200px">
+            <label>Semana atual</label>
+            <input id="goalCurrentWeek" disabled />
+          </div>
+          <div class="field" style="min-width:280px">
+            <label>Semana fechada?</label>
+            <input id="goalWeekClosed" disabled />
+          </div>
+          <div class="rowRight" style="margin-left:auto">
+            <button class="btn warn" id="btnCloseWeek">Fechar Semana Atual</button>
+            <button class="btn ghost" id="btnReopenWeeks">Reabrir Semanas</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="row">
+          <div class="field" style="min-width:180px">
+            <label>% Semana 1 (base)</label>
+            <input id="pW1" inputmode="decimal" placeholder="Ex: 25" />
+          </div>
+          <div class="field" style="min-width:180px">
+            <label>% Semana 2 (base)</label>
+            <input id="pW2" inputmode="decimal" placeholder="Ex: 25" />
+          </div>
+          <div class="field" style="min-width:180px">
+            <label>% Semana 3 (base)</label>
+            <input id="pW3" inputmode="decimal" placeholder="Ex: 25" />
+          </div>
+          <div class="field" style="min-width:180px">
+            <label>% Semana 4 (base)</label>
+            <input id="pW4" inputmode="decimal" placeholder="Ex: 25" />
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="row">
+          <div class="field" style="min-width:220px">
+            <label>Meta Semana 1 (R$)</label>
+            <input id="goalW1" disabled />
+          </div>
+          <div class="field" style="min-width:220px">
+            <label>Meta Semana 2 (R$)</label>
+            <input id="goalW2" disabled />
+          </div>
+          <div class="field" style="min-width:220px">
+            <label>Meta Semana 3 (R$)</label>
+            <input id="goalW3" disabled />
+          </div>
+          <div class="field" style="min-width:220px">
+            <label>Meta Semana 4 (R$)</label>
+            <input id="goalW4" disabled />
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="row">
+          <div class="field" style="min-width:220px">
+            <label>% Semana 1 (recalculada)</label>
+            <input id="rpW1" disabled />
+          </div>
+          <div class="field" style="min-width:220px">
+            <label>% Semana 2 (recalculada)</label>
+            <input id="rpW2" disabled />
+          </div>
+          <div class="field" style="min-width:220px">
+            <label>% Semana 3 (recalculada)</label>
+            <input id="rpW3" disabled />
+          </div>
+          <div class="field" style="min-width:220px">
+            <label>% Semana 4 (recalculada)</label>
+            <input id="rpW4" disabled />
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <h3 style="margin:0 0 8px 0; font-size:14px; letter-spacing:.06em; text-transform:uppercase; color:#cfe0ff">Progresso</h3>
+
+        <div class="kpis" id="kpisGoals"></div>
+
+        <div class="divider"></div>
+
+        <div class="row" style="gap:14px">
+          <div style="flex:1; min-width: 280px">
+            <div class="row" style="justify-content:space-between">
+              <div class="tiny">Meta diária (AUTO — dias restantes)</div>
+              <div class="tiny"><b id="goalDailyText"></b></div>
+            </div>
+            <div class="bar"><i id="barDaily"></i></div>
+            <div class="row" style="justify-content:space-between; margin-top:8px">
+              <div class="tiny">Falta</div>
+              <div class="tiny"><b id="goalDailyLeft"></b></div>
+            </div>
+          </div>
+
+          <div style="flex:1; min-width: 280px">
+            <div class="row" style="justify-content:space-between">
+              <div class="tiny">Meta semanal (semana atual)</div>
+              <div class="tiny"><b id="goalWeeklyText"></b></div>
+            </div>
+            <div class="bar"><i id="barWeekly"></i></div>
+            <div class="row" style="justify-content:space-between; margin-top:8px">
+              <div class="tiny">Falta</div>
+              <div class="tiny"><b id="goalWeeklyLeft"></b></div>
+            </div>
+          </div>
+
+          <div style="flex:1; min-width: 280px">
+            <div class="row" style="justify-content:space-between">
+              <div class="tiny">Meta mensal</div>
+              <div class="tiny"><b id="goalMonthlyText"></b></div>
+            </div>
+            <div class="bar"><i id="barMonthly"></i></div>
+            <div class="row" style="justify-content:space-between; margin-top:8px">
+              <div class="tiny">Falta</div>
+              <div class="tiny"><b id="goalMonthlyLeft"></b></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="hint">
+          • Semana do mês usada: 1 (dias 1–7), 2 (8–14), 3 (15–21), 4 (22–final).<br/>
+          • Se você fechar a semana, o NEXXT redistribui o restante automaticamente.
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- RANKING METAS -->
+  <div id="viewMetasRank" style="display:none">
+    <section class="card">
+      <div class="cardHeader">
+        <h2>Ranking Metas</h2>
+        <div class="rowRight">
+          <button class="btn" id="btnRefreshMetaRank">Atualizar</button>
+        </div>
+      </div>
+      <div class="cardBody">
+        <div class="row">
+          <div class="field">
+            <label>Mês</label>
+            <input id="metaRankMonth" type="month" />
+          </div>
+          <div class="field">
+            <label>Meta mensal (referência)</label>
+            <input id="metaRankMonthly" inputmode="decimal" placeholder="Auto pela meta salva" />
+          </div>
+          <div class="field">
+            <label>Exibição</label>
+            <select id="metaRankMode">
+              <option value="seller">Progresso por vendedor (no mês)</option>
+              <option value="store" selected>Progresso da loja + corrida até a lua</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div id="metaRankKpis" class="kpis"></div>
+
+        <div class="divider"></div>
+
+        <div class="race" id="race">
+          <div class="track"></div>
+          <div class="moon">🌙</div>
+          <div class="moonBoom" id="moonBoom">
+            <div>
+              <div class="title">🚀 META BATIDA!</div>
+              <div class="sub">Parabéns! Chegamos na lua. Bora manter o ritmo! 🔥</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div id="metaRankTable"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- NÃO CONVERTIDOS -->
+  <div id="viewNoConv" style="display:none">
+    <section class="card">
+      <div class="cardHeader">
+        <h2>Análise — Não Convertidos</h2>
+        <div class="rowRight">
+          <button class="btn" id="btnNoConvRefresh">Atualizar</button>
+        </div>
+      </div>
+      <div class="cardBody">
+        <div class="row">
+          <div class="field">
+            <label>Data (análise do dia)</label>
+            <input id="ncDate" type="date" />
+          </div>
+          <div class="field">
+            <label>Mês (análise do mês)</label>
+            <input id="ncMonth" type="month" />
+          </div>
+          <div class="field">
+            <label>Visão</label>
+            <select id="ncView">
+              <option value="day" selected>Dia</option>
+              <option value="month">Mês</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="compare">
+          <div class="barCard">
+            <div class="row" style="justify-content:space-between">
+              <div style="font-weight:900">✅ Convertidos</div>
+              <div class="tag good" id="convCount">0</div>
+            </div>
+            <div class="meter good"><i id="convBar"></i></div>
+            <div class="hint" style="margin-top:8px" id="convHint">—</div>
+          </div>
+
+          <div class="barCard">
+            <div class="row" style="justify-content:space-between">
+              <div style="font-weight:900">❌ Não convertidos</div>
+              <div class="tag bad" id="noConvCount">0</div>
+            </div>
+            <div class="meter bad"><i id="noConvBar"></i></div>
+            <div class="hint" style="margin-top:8px" id="noConvHint">—</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="kpis" id="ncKpis"></div>
+
+        <div class="divider"></div>
+
+        <div class="row" style="gap:14px">
+          <div style="flex:1; min-width: 300px" id="ncReasonsWrap"></div>
+          <div style="flex:1; min-width: 300px" id="ncItemsWrap"></div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="row" style="gap:14px">
+          <div style="flex:1; min-width: 300px" id="ncGenderWrap"></div>
+          <div style="flex:1; min-width: 300px" id="ncSizesWrap"></div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="hint">
+          Aqui você enxerga o que mais está travando as vendas: preço, numeração, falta de peça, etc.
+          Isso vira ação prática (estoque, mix, VM, argumentação do time).
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- FX Layer -->
+<div id="fxLayer"></div>
+
+<!-- THEME DOCK -->
+<div class="themeDock">
+  <button class="themeBtn default" id="themeDefault" title="Tema padrão">
+    <span class="themeTip">Tema padrão</span>
+    <span class="dot"></span>
+  </button>
+  <button class="themeBtn neon" id="themeNeon" title="Tema neon">
+    <span class="themeTip">Tema neon</span>
+    <span class="dot"></span>
+  </button>
+</div>
+
+<!-- MODAL SETTINGS -->
+<div class="modalBack" id="settingsBack">
+  <div class="modal">
+    <div class="modalHead">
+      <h3>Configurações da Loja</h3>
+      <button class="close" id="closeSettings">Fechar</button>
+    </div>
+    <div class="modalBody">
+      <div class="row">
+        <div class="field">
+          <label>Nome da loja</label>
+          <input id="storeName" placeholder="Ex: TXC Araguaína" />
+        </div>
+        <div class="field">
+          <label>Status</label>
+          <select id="storeStatus">
+            <option value="Online">Online</option>
+            <option value="Offline">Offline</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="row">
+        <div class="field" style="min-width:320px">
+          <label>Logo da loja (imagem)</label>
+          <input id="logoInput" type="file" accept="image/*" />
+          <div class="hint">A logo fica no topo. O NEXXT continua como marca principal.</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="row">
+        <div class="field">
+          <label>Finalização pede Valor (R$)?</label>
+          <select id="optValue">
+            <option value="yes">Sim</option>
+            <option value="no">Não</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Finalização pede Peças (P.A.)?</label>
+          <select id="optPieces">
+            <option value="yes">Sim</option>
+            <option value="no">Não</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="dangerZone">
+        <div>
+          <div style="font-weight:800">Zerar dia (apagar registros de hoje)</div>
+          <div class="tiny">Mantém vendedores e fila. Apaga atendimentos finalizados de hoje.</div>
+        </div>
+        <button class="btn bad" id="btnResetDay">Zerar dia</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="dangerZone">
+        <div>
+          <div style="font-weight:800">Reset total (apagar tudo)</div>
+          <div class="tiny">Apaga vendedores, fila, logo, metas e todos os registros. Irreversível.</div>
+        </div>
+        <button class="btn bad" id="btnResetAll">Reset total</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADD SELLER -->
+<div class="modalBack" id="sellerBack">
+  <div class="modal">
+    <div class="modalHead">
+      <h3>Novo vendedor</h3>
+      <button class="close" id="closeSeller">Fechar</button>
+    </div>
+    <div class="modalBody">
+      <div class="row">
+        <div class="field">
+          <label>Nome</label>
+          <input id="sellerName" placeholder="Ex: Camila" />
+        </div>
+        <div class="field" style="min-width:320px">
+          <label>Foto (opcional)</label>
+          <input id="sellerPhoto" type="file" accept="image/*" />
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="actions">
+        <button class="btn good" id="btnCreateSeller">Criar vendedor</button>
+      </div>
+      <div class="hint" style="margin-top:10px">Depois de criar, clique no vendedor (fora da fila) para colocá-lo na fila.</div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RANKING -->
+<div class="modalBack" id="rankingBack">
+  <div class="modal">
+    <div class="modalHead">
+      <h3>Ranking do dia</h3>
+      <button class="close" id="closeRanking">Fechar</button>
+    </div>
+    <div class="modalBody">
+      <div class="hint">Ordenado por <b>Conversão</b>. Empate: mais vendas.</div>
+      <div class="divider"></div>
+      <div class="list" id="rankingList"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ======================
+  // PWA register
+  // ======================
+  (function registerSW(){
+    try{
+      if("serviceWorker" in navigator){
+        navigator.serviceWorker.register("./sw.js").catch(()=>{});
+      }
+    }catch{}
+  })();
+
+  // ======================
+  // STORAGE + STATE
+  // ======================
+  const KEY = "nexxt_v2_goals_no_conv_pwa";
+  const load = () => { try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch { return null; } };
+  const save = (s) => localStorage.setItem(KEY, JSON.stringify(s));
+  function uid(){ return Math.random().toString(16).slice(2) + Date.now().toString(16); }
+
+  function todayKey(d = new Date()){
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const day = String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${day}`;
+  }
+  function monthKey(d = new Date()){
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    return `${y}-${m}`;
+  }
+  function nowTs(){ return Date.now(); }
+
+  const NOSOLD_REASONS = [
+    "Pesquisando preço",
+    "Dando aquela olhadinha",
+    "Não tinha a numeração",
+    "Não tinha a peça na loja",
+    "Não curtiu o modelo / caimento",
+    "Volta depois / indeciso",
+    "Outro"
+  ];
+
+  const ITEM_TYPES = [
+    "Camiseta", "Calça", "Camisa MC", "Camisa ML", "Vestido", "Jaqueta",
+    "Acessórios", "Bermuda", "Saia", "Polo", "Boné"
+  ];
+
+  const defaultState = {
+    store: { name:"Sua loja", status:"Online", logoDataUrl:"" },
+    options: { askValue:true, askPieces:true },
+    ui: { theme: "default" }, // default | neon
+    sellers: [
+      { id: uid(), name:"Erick", photo:"", paused:false },
+      { id: uid(), name:"Camila", photo:"", paused:false },
+      { id: uid(), name:"Mariana", photo:"", paused:false },
+    ],
+    queue: [],
+    pool: [],
+    current: null, // { sellerId, startTs }
+    records: [],
+    goalsByMonth: {
+      // "YYYY-MM": {
+      //   monthly: number,
+      //   basePercents: [25,25,25,25],
+      //   weekTargets: [number,number,number,number], // recalculadas
+      //   closedWeeks: { "1": true, ... }
+      // }
+    }
+  };
+
+  let state = load() || defaultState;
+
+  if(state.pool.length === 0 && state.queue.length === 0){
+    state.pool = state.sellers.map(s => s.id);
+    save(state);
+  }
+
+  // ======================
+  // HELPERS
+  // ======================
+  const $ = (id) => document.getElementById(id);
+  function getSeller(id){ return state.sellers.find(s => s.id === id); }
+
+  function parseBRNumber(str){
+    if(!str) return 0;
+    const cleaned = str.toString().trim().replace(/\./g, "").replace(",", ".");
+    const n = Number(cleaned);
+    return Number.isFinite(n) ? n : 0;
+  }
+  function formatMoney(v){
+    const n = Number(v || 0);
+    return n.toLocaleString("pt-BR", { style:"currency", currency:"BRL" });
+  }
+  function formatNum(n){ return (Number(n||0)).toLocaleString("pt-BR"); }
+  function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+
+  function daysInMonth(yyyyMm){
+    const [y,m] = yyyyMm.split("-").map(Number);
+    return new Date(y, m, 0).getDate();
+  }
+
+  function remainingDaysInMonthFromToday(yyyyMm){
+    const [y,m] = yyyyMm.split("-").map(Number);
+    const now = new Date();
+    // se o mês escolhido não é o mês atual, usa todos os dias
+    if(now.getFullYear() !== y || (now.getMonth()+1) !== m) return daysInMonth(yyyyMm);
+    const total = daysInMonth(yyyyMm);
+    const today = now.getDate();
+    return Math.max(1, total - today + 1); // inclui hoje
+  }
+
+  // Semana do mês (1-4)
+  function weekOfMonth(dateKeyStr){
+    const day = Number(dateKeyStr.slice(8,10));
+    if(day <= 7) return 1;
+    if(day <= 14) return 2;
+    if(day <= 21) return 3;
+    return 4;
+  }
+
+  function agg(records){
+    let atend=records.length;
+    let sales=0, revenue=0, pieces=0, totalTime=0;
+    for(const r of records){
+      if(r.outcome === "sold") sales++;
+      revenue += Number(r.value||0);
+      pieces += Number(r.pieces||0);
+      totalTime += Math.max(0, (r.tsEnd||r.tsStart||0) - (r.tsStart||0));
+    }
+    const conv = atend>0 ? (sales/atend)*100 : 0;
+    const paPerSale = sales>0 ? (pieces/sales) : 0;
+    const paPerAttend = atend>0 ? (pieces/atend) : 0;
+    const avgTimeSec = atend>0 ? Math.round((totalTime/atend)/1000) : 0;
+    return { atend, sales, revenue, pieces, conv, paPerSale, paPerAttend, avgTimeSec };
+  }
+
+  function aggBySeller(records){
+    const map = new Map();
+    for(const r of records){
+      const sid = r.sellerId;
+      if(!map.has(sid)) map.set(sid, []);
+      map.get(sid).push(r);
+    }
+    const rows = [];
+    for(const [sid, recs] of map.entries()){
+      rows.push({ sellerId:sid, ...agg(recs) });
+    }
+    return rows;
+  }
+
+  function groupByDate(records){
+    const map = new Map();
+    for(const r of records){
+      const k = r.dateKey;
+      if(!map.has(k)) map.set(k, []);
+      map.get(k).push(r);
+    }
+    const rows = [];
+    for(const [k, recs] of map.entries()){
+      rows.push({ dateKey:k, ...agg(recs) });
+    }
+    rows.sort((a,b)=> a.dateKey.localeCompare(b.dateKey));
+    return rows;
+  }
+
+  function filterRecordsForDataView(){
+    const dateISO = $("dataDate")?.value;
+    const monthISO = $("dataMonth")?.value;
+    const chosenDate = dateISO ? dateISO : todayKey();
+    const chosenMonth = monthISO ? monthISO : monthKey();
+    return { chosenDate, chosenMonth };
+  }
+
+  // ======================
+  // THEME
+  // ======================
+  function applyTheme(){
+    document.documentElement.dataset.theme = (state.ui?.theme === "neon") ? "neon" : "default";
+  }
+
+  // ======================
+  // FX (fireworks + rocket)
+  // ======================
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  function burstFx(x, y){
+    const fx = $("fxLayer");
+    const count = 22;
+    for(let i=0;i<count;i++){
+      const p = document.createElement("div");
+      p.className = "particle";
+      const ang = Math.random()*Math.PI*2;
+      const dist = 70 + Math.random()*120;
+      const dx = Math.cos(ang)*dist;
+      const dy = Math.sin(ang)*dist;
+      const c = pick([
+        "rgba(0,255,154,.95)","rgba(255,59,122,.95)","rgba(106,124,255,.95)",
+        "rgba(255,209,102,.95)","rgba(255,255,255,.85)"
+      ]);
+      p.style.background = c;
+      p.style.left = x + "px";
+      p.style.top = y + "px";
+      p.style.setProperty("--x0", "0px");
+      p.style.setProperty("--y0", "0px");
+      p.style.setProperty("--x1", dx+"px");
+      p.style.setProperty("--y1", dy+"px");
+      fx.appendChild(p);
+      setTimeout(()=>p.remove(), 1000);
+    }
+  }
+
+  function rocketFx(x, y){
+    const fx = $("fxLayer");
+    const r = document.createElement("div");
+    r.className = "rocketFly";
+    r.textContent = "🚀";
+    r.style.left = x + "px";
+    r.style.top = y + "px";
+    r.style.setProperty("--rx0", "0px");
+    r.style.setProperty("--ry0", "0px");
+    r.style.setProperty("--rx1", (Math.random()*140+80)+"px");
+    r.style.setProperty("--ry1", (- (Math.random()*240+140))+"px");
+    fx.appendChild(r);
+    setTimeout(()=>r.remove(), 950);
+  }
+
+  function celebrateSale(){
+    const panel = $("attendPanel");
+    const rect = panel.getBoundingClientRect();
+    const x = rect.left + rect.width*0.75;
+    const y = rect.top + rect.height*0.35;
+    rocketFx(x, y);
+    burstFx(x+20, y-20);
+    setTimeout(()=>burstFx(x-40, y-60), 120);
+  }
+
+  // ======================
+  // HEADER
+  // ======================
+  function renderHeader(){
+    $("storeNameTop").textContent = state.store.name || "Sua loja";
+    $("statusChip").textContent = state.store.status || "Online";
+    const logoBox = $("logoBox");
+    logoBox.innerHTML = "";
+    if(state.store.logoDataUrl){
+      const img = document.createElement("img");
+      img.src = state.store.logoDataUrl;
+      logoBox.appendChild(img);
+    } else {
+      const span = document.createElement("span");
+      span.textContent = "N";
+      span.style.fontWeight = "900";
+      span.style.color = "var(--muted)";
+      logoBox.appendChild(span);
+    }
+  }
+
+  // ======================
+  // OPERACAO
+  // ======================
+  function sellerStatsDay(sid, dateKey){
+    const recs = state.records.filter(r => r.dateKey === dateKey && r.sellerId === sid);
+    return agg(recs);
+  }
+
+  function renderKpis(){
+    const tk = todayKey();
+    const recsToday = state.records.filter(r => r.dateKey === tk);
+    const a = agg(recsToday);
+
+    const kpis = [
+      { t:"Atendimentos", v: formatNum(a.atend) },
+      { t:"Vendas", v: formatNum(a.sales) },
+      { t:"Conversão", v: a.conv.toFixed(1) + "%", cls:"good" },
+      { t:"Faturamento", v: formatMoney(a.revenue) },
+    ];
+    const el = $("kpis");
+    el.innerHTML = "";
+    for(const k of kpis){
+      const div = document.createElement("div");
+      div.className = "kpi";
+      div.innerHTML = `<div class="t">${k.t}</div><div class="v ${k.cls||""}">${k.v}</div>`;
+      el.appendChild(div);
+    }
+  }
+
+  function renderQueue(){
+    const q = $("queueList");
+    q.innerHTML = "";
+
+    if(state.queue.length === 0){
+      const empty = document.createElement("div");
+      empty.className = "hint";
+      empty.textContent = "Fila vazia. Adicione vendedores do rodapé para começar.";
+      q.appendChild(empty);
+      return;
+    }
+
+    const tk = todayKey();
+
+    state.queue.forEach((sid, idx) => {
+      const s = getSeller(sid);
+      if(!s) return;
+
+      const st = sellerStatsDay(sid, tk);
+
+      const item = document.createElement("div");
+      item.className = "item";
+      item.innerHTML = `
+        <div class="leftItem">
+          <div class="pos">${idx+1}</div>
+          <div class="avatar">${s.photo ? `<img src="${s.photo}">` : `<span style="color:var(--muted);font-weight:900">${(s.name||"?")[0].toUpperCase()}</span>`}</div>
+          <div class="nameBlock">
+            <div class="name">${s.name}</div>
+            <div class="meta">${st.atend} atend · ${st.sales} vendas · ${st.conv.toFixed(1)}% conv · PA(venda) ${st.paPerSale.toFixed(2)}</div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn" data-act="up" data-id="${sid}">↑</button>
+          <button class="btn" data-act="down" data-id="${sid}">↓</button>
+          <button class="btn warn" data-act="pause" data-id="${sid}">${s.paused ? "Retomar" : "Pausar"}</button>
+          <button class="btn bad" data-act="remove" data-id="${sid}">Tirar</button>
+        </div>
+      `;
+      q.appendChild(item);
+    });
+
+    q.querySelectorAll("button[data-act]").forEach(btn=>{
+      btn.addEventListener("click", (e)=>{
+        const act = e.currentTarget.dataset.act;
+        const sid = e.currentTarget.dataset.id;
+        handleQueueAction(act, sid);
+      });
+    });
+  }
+
+  function renderPool(){
+    const p = $("poolList");
+    p.innerHTML = "";
+
+    if(state.pool.length === 0){
+      const empty = document.createElement("div");
+      empty.className = "hint";
+      empty.textContent = "Nenhum vendedor fora da fila.";
+      p.appendChild(empty);
+      return;
+    }
+
+    state.pool.forEach((sid) => {
+      const s = getSeller(sid);
+      if(!s) return;
+
+      const item = document.createElement("div");
+      item.className = "item";
+      item.style.cursor = "pointer";
+      item.innerHTML = `
+        <div class="leftItem">
+          <div class="avatar">${s.photo ? `<img src="${s.photo}">` : `<span style="color:var(--muted);font-weight:900">${(s.name||"?")[0].toUpperCase()}</span>`}</div>
+          <div class="nameBlock">
+            <div class="name">${s.name}</div>
+            <div class="meta">Clique para entrar na fila</div>
+          </div>
+        </div>
+        <span class="tag ${s.paused ? "warn":""}">${s.paused ? "Pausado" : "Fora"}</span>
+      `;
+      item.addEventListener("click", ()=>{
+        if(s.paused){
+          alert("Esse vendedor está pausado. Retome pelo gestor para voltar.");
+          return;
+        }
+        state.pool = state.pool.filter(x => x !== sid);
+        state.queue.push(sid);
+        save(state);
+        renderAll();
+      });
+      p.appendChild(item);
+    });
+  }
+
+  function renderCurrent(){
+    const panel = $("attendPanel");
+    const tag = $("attendTag");
+
+    if(!state.current){
+      tag.textContent = "Nenhum";
+      tag.className = "tag";
+      panel.innerHTML = `<div class="hint">Chame o próximo para iniciar um atendimento.</div>`;
+      return;
+    }
+
+    const s = getSeller(state.current.sellerId);
+    if(!s){ state.current = null; save(state); renderAll(); return; }
+
+    tag.textContent = "Atendendo";
+    tag.className = "tag good";
+
+    const tk = todayKey();
+    const st = sellerStatsDay(s.id, tk);
+    const elapsedSec = Math.floor((nowTs() - state.current.startTs)/1000);
+
+    panel.innerHTML = `
+      <div class="item" style="padding:12px">
+        <div class="leftItem">
+          <div class="avatar" style="width:58px;height:58px;border-radius:18px">
+            ${s.photo ? `<img src="${s.photo}">` : `<span style="color:var(--muted);font-weight:900;font-size:18px">${(s.name||"?")[0].toUpperCase()}</span>`}
+          </div>
+          <div class="nameBlock">
+            <div class="name" style="font-size:18px">${s.name}</div>
+            <div class="meta">Atendendo agora · <b id="timer">${elapsedSec}s</b></div>
+            <div class="meta">${st.atend} atend · ${st.sales} vendas · ${st.conv.toFixed(1)}% conv · PA(venda) ${st.paPerSale.toFixed(2)}</div>
+          </div>
+        </div>
+        <span class="tag good">Em atendimento</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="big">
+        <button class="btn good" id="btnSold">✅ Vendeu</button>
+        <button class="btn bad" id="btnNoSold">❌ Não vendeu</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <div id="finalizeForm" style="display:none">
+        <div id="soldFields" style="display:none">
+          <div class="row">
+            <div class="field" style="min-width:220px; display:${state.options.askValue ? "flex":"none"}">
+              <label>Valor (R$)</label>
+              <input id="saleValue" inputmode="decimal" placeholder="Ex: 399,90" />
+            </div>
+            <div class="field" style="min-width:220px; display:${state.options.askPieces ? "flex":"none"}">
+              <label>Peças (P.A.)</label>
+              <input id="salePieces" inputmode="numeric" placeholder="Ex: 3" />
+            </div>
+          </div>
+        </div>
+
+        <div id="nosoldFields" style="display:none">
+          <div class="row">
+            <div class="field" style="min-width:240px">
+              <label>Motivo</label>
+              <select id="nsReason">
+                ${NOSOLD_REASONS.map(r=>`<option value="${r}">${r}</option>`).join("")}
+              </select>
+            </div>
+
+            <div class="field" style="min-width:220px">
+              <label>Gênero</label>
+              <select id="nsGender">
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
+              </select>
+            </div>
+
+            <div class="field" style="min-width:260px">
+              <label>Tipo de peça</label>
+              <select id="nsItemType">
+                ${ITEM_TYPES.map(i=>`<option value="${i}">${i}</option>`).join("")}
+              </select>
+            </div>
+
+            <div class="field" style="min-width:220px">
+              <label>Numeração (se aplicável)</label>
+              <input id="nsSize" placeholder="Ex: 42, G, 38, 44" />
+            </div>
+          </div>
+
+          <div class="hint" style="margin-top:8px">
+            Dica: se marcou “Não tinha numeração”, coloque a numeração aqui. Se marcou “Não tinha peça”, escolha o tipo.
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="field" style="min-width:100%">
+          <label>Observação (opcional)</label>
+          <input id="saleObs" placeholder="Ex: cliente só pesquisando / voltou depois / etc" />
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="actions">
+          <button class="btn good" id="btnFinalize">Finalizar atendimento</button>
+          <button class="btn" id="btnCancelFinalize">Cancelar</button>
+        </div>
+        <div class="hint" style="margin-top:10px">Regra NEXXT: só volta pra fila depois de finalizar.</div>
+      </div>
+    `;
+
+    let outcome = null;
+
+    $("btnSold").addEventListener("click", ()=>{
+      outcome = "sold";
+      $("finalizeForm").style.display = "block";
+      $("soldFields").style.display = "block";
+      $("nosoldFields").style.display = "none";
+      $("btnSold").disabled = true;
+      $("btnNoSold").disabled = true;
+      celebrateSale();
+    });
+
+    $("btnNoSold").addEventListener("click", ()=>{
+      outcome = "nosold";
+      $("finalizeForm").style.display = "block";
+      $("soldFields").style.display = "none";
+      $("nosoldFields").style.display = "block";
+      $("btnSold").disabled = true;
+      $("btnNoSold").disabled = true;
+    });
+
+    $("btnCancelFinalize").addEventListener("click", ()=>{
+      outcome = null;
+      $("finalizeForm").style.display = "none";
+      $("btnSold").disabled = false;
+      $("btnNoSold").disabled = false;
+    });
+
+    $("btnFinalize").addEventListener("click", ()=>{
+      finalizeCurrent(outcome);
+    });
+  }
+
+  // ======================
+  // RANKING MODAL (dia)
+  // ======================
+  function renderRankingModal(){
+    const list = $("rankingList");
+    list.innerHTML = "";
+
+    const tk = todayKey();
+    const recsToday = state.records.filter(r => r.dateKey === tk);
+    const rows = aggBySeller(recsToday);
+
+    if(rows.length === 0){
+      list.innerHTML = `<div class="hint">Sem dados ainda. Finalize atendimentos para aparecer no ranking.</div>`;
+      return;
+    }
+
+    rows.sort((a,b)=>{
+      if(b.conv !== a.conv) return b.conv - a.conv;
+      if(b.sales !== a.sales) return b.sales - a.sales;
+      return b.revenue - a.revenue;
+    });
+
+    rows.forEach((r, i)=>{
+      const s = getSeller(r.sellerId);
+      const item = document.createElement("div");
+      item.className = "item";
+      item.innerHTML = `
+        <div class="leftItem">
+          <div class="pos">${i+1}</div>
+          <div class="avatar">${s?.photo ? `<img src="${s.photo}">` : `<span style="color:var(--muted);font-weight:900">${(s?.name||"?")[0].toUpperCase()}</span>`}</div>
+          <div class="nameBlock">
+            <div class="name">${s?.name || "Vendedor"}</div>
+            <div class="meta">${r.atend} atend · ${r.sales} vendas · PA(venda) ${r.paPerSale.toFixed(2)} · ${formatMoney(r.revenue)}</div>
+          </div>
+        </div>
+        <span class="tag good">${r.conv.toFixed(1)}%</span>
+      `;
+      list.appendChild(item);
+    });
+  }
+
+  // ======================
+  // DADOS
+  // ======================
+  function makeTable(headers, rows){
+    const table = document.createElement("table");
+    const thead = document.createElement("thead");
+    const trh = document.createElement("tr");
+    headers.forEach(h=>{
+      const th = document.createElement("th");
+      th.textContent = h;
+      trh.appendChild(th);
+    });
+    thead.appendChild(trh);
+    table.appendChild(thead);
+
+    const tbody = document.createElement("tbody");
+    rows.forEach(r=>{
+      const tr = document.createElement("tr");
+      r.forEach(cell=>{
+        const td = document.createElement("td");
+        td.textContent = cell;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+    return table;
+  }
+
+  function renderData(){
+    const view = $("dataView").value;
+    const { chosenDate, chosenMonth } = filterRecordsForDataView();
+
+    const recsDay = state.records.filter(r => r.dateKey === chosenDate);
+    const recsMonth = state.records.filter(r => r.monthKey === chosenMonth);
+
+    const a = agg(recsMonth);
+
+    const kpis = [
+      { t:"Atendimentos (mês)", v: formatNum(a.atend) },
+      { t:"Vendas (mês)", v: formatNum(a.sales) },
+      { t:"Conversão (mês)", v: a.conv.toFixed(1) + "%", cls:"good" },
+      { t:"P.A. (por venda)", v: a.paPerSale.toFixed(2) },
+    ];
+    const el = $("kpisData");
+    el.innerHTML = "";
+    for(const k of kpis){
+      const div = document.createElement("div");
+      div.className = "kpi";
+      div.innerHTML = `<div class="t">${k.t}</div><div class="v ${k.cls||""}">${k.v}</div>`;
+      el.appendChild(div);
+    }
+
+    const wrap = $("dataTableWrap");
+    wrap.innerHTML = "";
+
+    if(view === "dayRank"){
+      const rows = aggBySeller(recsDay);
+      if(rows.length === 0){
+        wrap.innerHTML = `<div class="hint">Sem registros em ${chosenDate}.</div>`;
+        return;
+      }
+      rows.sort((a,b)=>{
+        if(b.conv !== a.conv) return b.conv - a.conv;
+        if(b.sales !== a.sales) return b.sales - a.sales;
+        return b.revenue - a.revenue;
+      });
+      const body = rows.map((r, idx)=>{
+        const s = getSeller(r.sellerId);
+        return [String(idx+1), s?.name || "Vendedor", formatNum(r.atend), formatNum(r.sales), r.conv.toFixed(1)+"%", r.paPerSale.toFixed(2), formatMoney(r.revenue)];
+      });
+      wrap.appendChild(makeTable(["#","Vendedor","Atend.","Vendas","Conv.","P.A.(venda)","Fat."], body));
+      return;
+    }
+
+    if(view === "daily"){
+      const rows = groupByDate(recsMonth);
+      if(rows.length === 0){
+        wrap.innerHTML = `<div class="hint">Sem registros no mês ${chosenMonth}.</div>`;
+        return;
+      }
+      wrap.appendChild(makeTable(
+        ["Dia","Atend.","Vendas","Conv.","P.A.(venda)","P.A.(atend.)","Fat."],
+        rows.map(r=>[r.dateKey, formatNum(r.atend), formatNum(r.sales), r.conv.toFixed(1)+"%", r.paPerSale.toFixed(2), r.paPerAttend.toFixed(2), formatMoney(r.revenue)])
+      ));
+      return;
+    }
+
+    if(view === "sellerDaily"){
+      const byDate = new Map();
+      for(const r of recsMonth){
+        const k = r.dateKey;
+        if(!byDate.has(k)) byDate.set(k, []);
+        byDate.get(k).push(r);
+      }
+      const dates = Array.from(byDate.keys()).sort((a,b)=>a.localeCompare(b));
+      if(dates.length === 0){
+        wrap.innerHTML = `<div class="hint">Sem registros no mês ${chosenMonth}.</div>`;
+        return;
+      }
+      const sellers = state.sellers.map(s=>s.id);
+      const header = ["Vendedor", ...dates];
+      const body = sellers.map(sid=>{
+        const s = getSeller(sid);
+        const row = [s?.name || "Vendedor"];
+        for(const d of dates){
+          const rr = (byDate.get(d)||[]).filter(x=>x.sellerId===sid);
+          const aa = agg(rr);
+          row.push(aa.atend ? `${aa.conv.toFixed(0)}% (${aa.sales}/${aa.atend})` : "-");
+        }
+        return row;
+      }).filter(r=> r.slice(1).some(x=>x!=="-"));
+      wrap.appendChild(makeTable(header, body));
+      return;
+    }
+
+    if(view === "monthRank"){
+      const rows = aggBySeller(recsMonth);
+      if(rows.length === 0){
+        wrap.innerHTML = `<div class="hint">Sem registros no mês ${chosenMonth}.</div>`;
+        return;
+      }
+      rows.sort((a,b)=>{
+        if(b.conv !== a.conv) return b.conv - a.conv;
+        if(b.sales !== a.sales) return b.sales - a.sales;
+        return b.revenue - a.revenue;
+      });
+      const body = rows.map((r, idx)=>{
+        const s = getSeller(r.sellerId);
+        return [String(idx+1), s?.name || "Vendedor", formatNum(r.atend), formatNum(r.sales), r.conv.toFixed(1)+"%", r.paPerSale.toFixed(2), formatMoney(r.revenue)];
+      });
+      wrap.appendChild(makeTable(["#","Vendedor","Atend.","Vendas","Conv.","P.A.(venda)","Fat."], body));
+      return;
+    }
+
+    if(view === "raw"){
+      if(recsMonth.length === 0){
+        wrap.innerHTML = `<div class="hint">Sem registros no mês ${chosenMonth}.</div>`;
+        return;
+      }
+      const body = recsMonth
+        .slice()
+        .sort((a,b)=> (b.tsEnd||b.tsStart) - (a.tsEnd||a.tsStart))
+        .map(r=>{
+          const s = getSeller(r.sellerId);
+          const dt = new Date(r.tsStart);
+          const hh = String(dt.getHours()).padStart(2,"0");
+          const mm = String(dt.getMinutes()).padStart(2,"0");
+          const res = r.outcome === "sold" ? "Vendeu" : "Não vendeu";
+          return [r.dateKey, `${hh}:${mm}`, s?.name || "Vendedor", res, formatMoney(r.value||0), formatNum(r.pieces||0), (r.obs || "").slice(0,40)];
+        });
+      wrap.appendChild(makeTable(["Dia","Hora","Vendedor","Resultado","Valor","Peças","Obs"], body));
+      return;
+    }
+  }
+
+  // ======================
+  // GOALS (auto redistribuição)
+  // ======================
+  function getGoalsForMonth(mk){
+    if(!state.goalsByMonth) state.goalsByMonth = {};
+    if(!state.goalsByMonth[mk]){
+      state.goalsByMonth[mk] = {
+        monthly: 0,
+        basePercents: [25,25,25,25],
+        weekTargets: [0,0,0,0],
+        closedWeeks: {} // {"1":true}
+      };
+    }
+    // migração defensiva
+    const g = state.goalsByMonth[mk];
+    if(!g.basePercents) g.basePercents = [25,25,25,25];
+    if(!g.weekTargets) g.weekTargets = [0,0,0,0];
+    if(!g.closedWeeks) g.closedWeeks = {};
+    return g;
+  }
+
+  function sum(arr){ return arr.reduce((a,b)=>a+Number(b||0),0); }
+
+  function getMonthRevenueSold(mk){
+    const soldMonth = state.records.filter(r => r.monthKey === mk && r.outcome==="sold");
+    return soldMonth.reduce((s,r)=> s + Number(r.value||0), 0);
+  }
+
+  function autoRedistributeGoals(mk){
+    const g = getGoalsForMonth(mk);
+
+    const monthly = Number(g.monthly||0);
+    const done = getMonthRevenueSold(mk);
+
+    const remaining = Math.max(0, monthly - done);
+
+    // semanas que ainda contam (não fechadas)
+    const openWeeks = [1,2,3,4].filter(w => !g.closedWeeks[String(w)]);
+    const base = g.basePercents.map(p=> Number(p||0));
+
+    // soma % somente das abertas
+    const sumOpenBase = sum(openWeeks.map(w=> base[w-1]));
+
+    // se não tem porcentagem válida, divide igual nas abertas
+    const normalized = [0,0,0,0];
+    if(openWeeks.length === 0){
+      // tudo fechado -> mantém targets
+    } else if(sumOpenBase <= 0){
+      openWeeks.forEach(w => normalized[w-1] = 100/openWeeks.length);
+    } else {
+      openWeeks.forEach(w => normalized[w-1] = (base[w-1]/sumOpenBase)*100);
+    }
+
+    // targets: semanas fechadas mantém o que já estava; abertas recebem a redistribuição do restante
+    const targets = [...g.weekTargets];
+    openWeeks.forEach(w=>{
+      targets[w-1] = remaining * (normalized[w-1]/100);
+    });
+
+    g.weekTargets = targets;
+
+    // diária AUTO: baseado nos dias restantes do mês (se for mês atual). Se não for, usa total dias.
+    const daysRemain = remainingDaysInMonthFromToday(mk);
+    const daily = (remaining / Math.max(1, daysRemain));
+
+    return { g, normalizedPercents: normalized, remaining, daily };
+  }
+
+  function renderGoals(){
+    const mk = $("goalMonth").value || monthKey();
+    const g = getGoalsForMonth(mk);
+
+    $("goalMonth").value = mk;
+    $("goalMonthly").value = g.monthly ? String(g.monthly).replace(".", ",") : "";
+
+    // base percents
+    $("pW1").value = String(g.basePercents?.[0] ?? 25).replace(".", ",");
+    $("pW2").value = String(g.basePercents?.[1] ?? 25).replace(".", ",");
+    $("pW3").value = String(g.basePercents?.[2] ?? 25).replace(".", ",");
+    $("pW4").value = String(g.basePercents?.[3] ?? 25).replace(".", ",");
+
+    // auto redistribui (sempre que abrir metas)
+    const { normalizedPercents, daily } = autoRedistributeGoals(mk);
+
+    $("goalDaily").value = String((daily||0).toFixed(2)).replace(".", ",");
+
+    // metas semana (recalculadas)
+    $("goalW1").value = formatMoney(g.weekTargets[0]||0);
+    $("goalW2").value = formatMoney(g.weekTargets[1]||0);
+    $("goalW3").value = formatMoney(g.weekTargets[2]||0);
+    $("goalW4").value = formatMoney(g.weekTargets[3]||0);
+
+    // percents recalculadas (abertas) / fechadas vira "Fechada"
+    [1,2,3,4].forEach(w=>{
+      const closed = !!g.closedWeeks[String(w)];
+      const v = closed ? "Fechada" : (normalizedPercents[w-1]||0).toFixed(1) + "%";
+      $("rpW"+w).value = v;
+    });
+
+    // semana atual
+    const today = todayKey();
+    const cw = weekOfMonth(today);
+    $("goalCurrentWeek").value = "Semana " + cw;
+    $("goalWeekClosed").value = g.closedWeeks[String(cw)] ? "Sim" : "Não";
+
+    save(state);
+    renderGoalsProgress();
+  }
+
+  function renderGoalsProgress(){
+    const mk = $("goalMonth").value || monthKey();
+    const g = getGoalsForMonth(mk);
+
+    const today = todayKey();
+    const currentWeek = weekOfMonth(today);
+
+    const monthSold = state.records.filter(r => r.monthKey === mk && r.outcome==="sold");
+    const monthRevenue = monthSold.reduce((s,r)=> s + Number(r.value||0), 0);
+
+    const daySold = state.records.filter(r => r.dateKey === today && r.outcome==="sold");
+    const dayRevenue = daySold.reduce((s,r)=> s + Number(r.value||0), 0);
+
+    const weekSold = state.records.filter(r => r.monthKey === mk && r.outcome==="sold" && weekOfMonth(r.dateKey) === currentWeek);
+    const weekRevenue = weekSold.reduce((s,r)=> s + Number(r.value||0), 0);
+
+    const monthlyTarget = Number(g.monthly||0);
+    const weeklyTarget = Number(g.weekTargets?.[currentWeek-1] || 0);
+
+    // diária auto baseada no restante
+    const { remaining, daily } = autoRedistributeGoals(mk);
+    const dailyTarget = Number(daily||0);
+
+    const monthlyPct = monthlyTarget>0 ? clamp((monthRevenue/monthlyTarget)*100, 0, 100) : 0;
+    const dailyPct = dailyTarget>0 ? clamp((dayRevenue/dailyTarget)*100, 0, 100) : 0;
+    const weeklyPct = weeklyTarget>0 ? clamp((weekRevenue/weeklyTarget)*100, 0, 100) : 0;
+
+    $("goalDailyText").textContent = `${formatMoney(dayRevenue)} / ${formatMoney(dailyTarget)}`;
+    $("goalWeeklyText").textContent = `${formatMoney(weekRevenue)} / ${formatMoney(weeklyTarget)} (S${currentWeek})`;
+    $("goalMonthlyText").textContent = `${formatMoney(monthRevenue)} / ${formatMoney(monthlyTarget)}`;
+
+    $("goalDailyLeft").textContent = formatMoney(Math.max(0, dailyTarget - dayRevenue));
+    $("goalWeeklyLeft").textContent = formatMoney(Math.max(0, weeklyTarget - weekRevenue));
+    $("goalMonthlyLeft").textContent = formatMoney(Math.max(0, monthlyTarget - monthRevenue));
+
+    $("barDaily").style.width = (dailyPct || 0) + "%";
+    $("barWeekly").style.width = (weeklyPct || 0) + "%";
+    $("barMonthly").style.width = (monthlyPct || 0) + "%";
+
+    // KPIs metas
+    const el = $("kpisGoals");
+    el.innerHTML = "";
+    const cards = [
+      { t: "Hoje (R$)", v: formatMoney(dayRevenue), cls: dailyPct>=100 ? "good":"" },
+      { t: "Semana atual (R$)", v: formatMoney(weekRevenue), cls: weeklyPct>=100 ? "good":"" },
+      { t: "Mês (R$)", v: formatMoney(monthRevenue), cls: monthlyPct>=100 ? "good":"" },
+      { t: "Restante do mês (R$)", v: formatMoney(remaining) },
+    ];
+    for(const k of cards){
+      const div = document.createElement("div");
+      div.className = "kpi";
+      div.innerHTML = `<div class="t">${k.t}</div><div class="v ${k.cls||""}">${k.v}</div>`;
+      el.appendChild(div);
+    }
+
+    // atualiza semana atual e flag
+    const cw = weekOfMonth(todayKey());
+    $("goalCurrentWeek").value = "Semana " + cw;
+    $("goalWeekClosed").value = g.closedWeeks[String(cw)] ? "Sim" : "Não";
+  }
+
+  function saveGoals(){
+    const mk = $("goalMonth").value || monthKey();
+    const g = getGoalsForMonth(mk);
+
+    g.monthly = parseBRNumber($("goalMonthly").value);
+    g.basePercents = [
+      parseBRNumber($("pW1").value),
+      parseBRNumber($("pW2").value),
+      parseBRNumber($("pW3").value),
+      parseBRNumber($("pW4").value),
+    ];
+
+    // Redistribui já ao salvar
+    autoRedistributeGoals(mk);
+    state.goalsByMonth[mk] = g;
+    save(state);
+
+    renderGoals();
+    renderMetaRank();
+    renderNoConv();
+
+    alert("Metas salvas e redistribuídas ✅");
+  }
+
+  function closeCurrentWeek(){
+    const mk = $("goalMonth").value || monthKey();
+    const g = getGoalsForMonth(mk);
+    const cw = weekOfMonth(todayKey());
+
+    if(g.closedWeeks[String(cw)]){ alert("Essa semana já está fechada."); return; }
+    if(!confirm(`Fechar Semana ${cw}? O NEXXT vai redistribuir a meta restante.`)) return;
+
+    g.closedWeeks[String(cw)] = true;
+    autoRedistributeGoals(mk);
+    state.goalsByMonth[mk] = g;
+    save(state);
+
+    renderGoals();
+    alert(`Semana ${cw} fechada ✅ Meta redistribuída.`);
+  }
+
+  function reopenWeeks(){
+    const mk = $("goalMonth").value || monthKey();
+    const g = getGoalsForMonth(mk);
+    if(!confirm("Reabrir todas as semanas?")) return;
+    g.closedWeeks = {};
+    autoRedistributeGoals(mk);
+    save(state);
+    renderGoals();
+  }
+
+  // ======================
+  // META RANK (lua)
+  // ======================
+  function renderMetaRank(){
+    const mk = $("metaRankMonth").value || monthKey();
+    $("metaRankMonth").value = mk;
+
+    const saved = getGoalsForMonth(mk);
+    const inputMeta = parseBRNumber($("metaRankMonthly").value);
+    const monthlyTarget = inputMeta || Number(saved.monthly||0);
+    if(!inputMeta && monthlyTarget){
+      $("metaRankMonthly").value = String(monthlyTarget).replace(".", ",");
+    }
+
+    const mode = $("metaRankMode").value;
+
+    const soldMonth = state.records.filter(r => r.monthKey === mk && r.outcome==="sold");
+    const monthRevenue = soldMonth.reduce((s,r)=> s + Number(r.value||0), 0);
+
+    const kpis = $("metaRankKpis");
+    kpis.innerHTML = "";
+    const pctStore = monthlyTarget>0 ? clamp((monthRevenue/monthlyTarget)*100,0,200) : 0;
+    const lack = Math.max(0, monthlyTarget - monthRevenue);
+
+    const k = [
+      { t:"Faturamento (mês)", v: formatMoney(monthRevenue), cls: "" },
+      { t:"Meta mensal", v: formatMoney(monthlyTarget), cls: "" },
+      { t:"Progresso", v: monthlyTarget>0 ? pctStore.toFixed(1)+"%" : "—", cls: (pctStore>=100)?"good":"" },
+      { t:"Falta", v: formatMoney(lack), cls: "" },
+    ];
+    for(const it of k){
+      const div = document.createElement("div");
+      div.className = "kpi";
+      div.innerHTML = `<div class="t">${it.t}</div><div class="v ${it.cls||""}">${it.v}</div>`;
+      kpis.appendChild(div);
+    }
+
+    const rows = aggBySeller(soldMonth);
+    rows.sort((a,b)=> b.revenue - a.revenue);
+
+    const tableWrap = $("metaRankTable");
+    tableWrap.innerHTML = "";
+
+    if(rows.length === 0){
+      tableWrap.innerHTML = `<div class="hint">Sem vendas registradas nesse mês ainda.</div>`;
+    } else {
+      const body = rows.map((r, idx)=>{
+        const s = getSeller(r.sellerId);
+        const pct = monthRevenue>0 ? (r.revenue/monthRevenue)*100 : 0;
+        return [String(idx+1), s?.name || "Vendedor", formatMoney(r.revenue), pct.toFixed(1)+"%", formatNum(r.sales), (r.paPerSale||0).toFixed(2)];
+      });
+      tableWrap.appendChild(makeTable(["#","Vendedor","Fat. mês","% da loja","Vendas","P.A."], body));
+    }
+
+    renderMoonRace(mk, monthlyTarget, mode, rows, monthRevenue);
+  }
+
+  function renderMoonRace(mk, monthlyTarget, mode, rows, storeRevenue){
+    const race = $("race");
+    race.querySelectorAll(".rocket").forEach(el=>el.remove());
+    $("moonBoom").style.display = "none";
+
+    const left = 12;
+    const rightPadding = 120;
+    const width = race.clientWidth - rightPadding - left;
+
+    const target = Number(monthlyTarget||0);
+    const storePct = target>0 ? clamp(storeRevenue/target, 0, 1.2) : 0;
+
+    if(target>0 && storeRevenue >= target){
+      $("moonBoom").style.display = "grid";
+      const rect = race.getBoundingClientRect();
+      burstFx(rect.right - 80, rect.top + 60);
+      setTimeout(()=>burstFx(rect.right - 110, rect.top + 40), 140);
+    }
+
+    const maxRockets = (mode==="store") ? 3 : 5;
+    const list = rows.slice(0, maxRockets);
+
+    list.forEach((r, i)=>{
+      const s = getSeller(r.sellerId);
+      const pct = target>0 ? clamp(r.revenue/target, 0, 1.2) : 0;
+      const x = left + width * pct;
+
+      const rocket = document.createElement("div");
+      rocket.className = "rocket";
+      rocket.style.left = x + "px";
+      rocket.style.top = (22 + i*24) + "px";
+
+      const pic = document.createElement("div");
+      pic.className = "pic";
+      if(s?.photo){
+        const img = document.createElement("img");
+        img.src = s.photo;
+        pic.appendChild(img);
+      } else {
+        pic.textContent = (s?.name||"?")[0].toUpperCase();
+      }
+
+      const ship = document.createElement("div");
+      ship.className = "ship";
+      ship.textContent = "🚀";
+
+      const lbl = document.createElement("div");
+      lbl.className = "lbl";
+      lbl.innerHTML = `<b>${s?.name || "Vendedor"}</b> · ${formatMoney(r.revenue)} · ${target? (pct*100).toFixed(1)+"%": "—"}`;
+
+      rocket.appendChild(pic);
+      rocket.appendChild(ship);
+      rocket.appendChild(lbl);
+      race.appendChild(rocket);
+    });
+
+    if(mode==="store"){
+      const xStore = left + width * storePct;
+      const rocket = document.createElement("div");
+      rocket.className = "rocket";
+      rocket.style.left = xStore + "px";
+      rocket.style.top = "110px";
+      rocket.style.opacity = "0.95";
+
+      const pic = document.createElement("div");
+      pic.className = "pic";
+      pic.textContent = "🏬";
+
+      const ship = document.createElement("div");
+      ship.className = "ship";
+      ship.textContent = "🚀";
+
+      const lbl = document.createElement("div");
+      lbl.className = "lbl";
+      lbl.innerHTML = `<b>LOJA</b> · ${formatMoney(storeRevenue)} · ${target? (storePct*100).toFixed(1)+"%": "—"}`;
+
+      rocket.appendChild(pic);
+      rocket.appendChild(ship);
+      rocket.appendChild(lbl);
+      race.appendChild(rocket);
+    }
+  }
+
+  // ======================
+  // NÃO CONVERTIDOS (análise)
+  // ======================
+  function getNoConvSelection(){
+    const d = $("ncDate").value || todayKey();
+    const m = $("ncMonth").value || monthKey();
+    const v = $("ncView").value || "day";
+    return { d, m, v };
+  }
+
+  function countBy(records, keyFn){
+    const map = new Map();
+    for(const r of records){
+      const k = keyFn(r) || "(vazio)";
+      map.set(k, (map.get(k)||0) + 1);
+    }
+    const arr = Array.from(map.entries()).map(([k,v])=>({k,v}));
+    arr.sort((a,b)=> b.v - a.v);
+    return arr;
+  }
+
+  function renderNoConv(){
+    const { d, m, v } = getNoConvSelection();
+
+    const scope = (v==="day")
+      ? state.records.filter(r=> r.dateKey === d)
+      : state.records.filter(r=> r.monthKey === m);
+
+    const sold = scope.filter(r=> r.outcome==="sold");
+    const nos = scope.filter(r=> r.outcome==="nosold");
+
+    const soldCount = sold.length;
+    const nosCount = nos.length;
+    const total = soldCount + nosCount;
+
+    $("convCount").textContent = String(soldCount);
+    $("noConvCount").textContent = String(nosCount);
+
+    const soldPct = total>0 ? (soldCount/total)*100 : 0;
+    const nosPct  = total>0 ? (nosCount/total)*100 : 0;
+
+    $("convBar").style.width = soldPct.toFixed(1) + "%";
+    $("noConvBar").style.width = nosPct.toFixed(1) + "%";
+
+    $("convHint").textContent = total>0 ? `Convertidos: ${soldPct.toFixed(1)}%` : "—";
+    $("noConvHint").textContent = total>0 ? `Não convertidos: ${nosPct.toFixed(1)}%` : "—";
+
+    // KPIs
+    const rev = sold.reduce((s,r)=> s+Number(r.value||0), 0);
+    const kpis = $("ncKpis");
+    kpis.innerHTML = "";
+    const cards = [
+      { t:"Atendimentos", v: formatNum(total) },
+      { t:"Vendas", v: formatNum(soldCount), cls:"good" },
+      { t:"Não vendidos", v: formatNum(nosCount) },
+      { t:"Faturamento (R$)", v: formatMoney(rev) },
+    ];
+    for(const k of cards){
+      const div = document.createElement("div");
+      div.className = "kpi";
+      div.innerHTML = `<div class="t">${k.t}</div><div class="v ${k.cls||""}">${k.v}</div>`;
+      kpis.appendChild(div);
+    }
+
+    // Tabelas
+    const reasons = countBy(nos, r=> r.noSale?.reason || "(sem motivo)");
+    const items   = countBy(nos, r=> r.noSale?.itemType || "(sem peça)");
+    const gender  = countBy(nos, r=> r.noSale?.gender || "(sem gênero)");
+    const sizes   = countBy(nos, r=> r.noSale?.size ? String(r.noSale.size).trim() : "(sem numeração)");
+
+    const rWrap = $("ncReasonsWrap");
+    const iWrap = $("ncItemsWrap");
+    const gWrap = $("ncGenderWrap");
+    const sWrap = $("ncSizesWrap");
+
+    rWrap.innerHTML = "";
+    iWrap.innerHTML = "";
+    gWrap.innerHTML = "";
+    sWrap.innerHTML = "";
+
+    if(nos.length === 0){
+      rWrap.innerHTML = `<div class="hint">Sem “não convertidos” nesse período. 👏</div>`;
+      return;
+    }
+
+    rWrap.appendChild(makeTable(["Motivo","Qtd"], reasons.map(x=>[x.k, String(x.v)])));
+    iWrap.appendChild(makeTable(["Peça","Qtd"], items.map(x=>[x.k, String(x.v)])));
+    gWrap.appendChild(makeTable(["Gênero","Qtd"], gender.map(x=>[x.k, String(x.v)])));
+    sWrap.appendChild(makeTable(["Numeração","Qtd"], sizes.map(x=>[x.k, String(x.v)])));
+  }
+
+  // ======================
+  // EXPORT
+  // ======================
+  function downloadBlob(content, filename, mime){
+    const blob = new Blob([content], {type: mime});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function exportJSON(){
+    const { chosenDate, chosenMonth } = filterRecordsForDataView();
+    const view = $("dataView").value;
+
+    const recsDay = state.records.filter(r => r.dateKey === chosenDate);
+    const recsMonth = state.records.filter(r => r.monthKey === chosenMonth);
+
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      store: state.store,
+      options: state.options,
+      ui: state.ui,
+      goalsByMonth: state.goalsByMonth,
+      selection: { view, chosenDate, chosenMonth },
+      sellers: state.sellers,
+      records: (view === "dayRank") ? recsDay : recsMonth
+    };
+
+    downloadBlob(
+      JSON.stringify(payload, null, 2),
+      `nexxt_${(state.store.name||"loja").replaceAll(" ","_")}_${view}_${view==="dayRank"?chosenDate:chosenMonth}.json`,
+      "application/json"
+    );
+  }
+
+  function csvEscape(v){
+    const s = String(v ?? "");
+    if(/[,"\n]/.test(s)) return `"${s.replace(/"/g,'""')}"`;
+    return s;
+  }
+
+  function exportCSV(){
+    const { chosenDate, chosenMonth } = filterRecordsForDataView();
+    const view = $("dataView").value;
+
+    const recsDay = state.records.filter(r => r.dateKey === chosenDate);
+    const recsMonth = state.records.filter(r => r.monthKey === chosenMonth);
+    const recs = (view === "dayRank") ? recsDay : recsMonth;
+
+    const header = ["id","date","time","seller","result","value","pieces","reason","gender","itemType","size","obs","tsStart","tsEnd"];
+    const lines = [header.join(",")];
+
+    const sorted = recs.slice().sort((a,b)=> (a.tsStart||0) - (b.tsStart||0));
+    for(const r of sorted){
+      const s = getSeller(r.sellerId);
+      const dt = new Date(r.tsStart);
+      const hh = String(dt.getHours()).padStart(2,"0");
+      const mm = String(dt.getMinutes()).padStart(2,"0");
+
+      const reason = r.noSale?.reason || "";
+      const gender = r.noSale?.gender || "";
+      const itemType = r.noSale?.itemType || "";
+      const size = r.noSale?.size || "";
+
+      const row = [
+        r.id,
+        r.dateKey,
+        `${hh}:${mm}`,
+        s?.name || "",
+        r.outcome === "sold" ? "sold" : "nosold",
+        Number(r.value||0).toFixed(2),
+        Number(r.pieces||0),
+        reason, gender, itemType, size,
+        r.obs || "",
+        r.tsStart || "",
+        r.tsEnd || ""
+      ].map(csvEscape);
+      lines.push(row.join(","));
+    }
+
+    const suffix = (view === "dayRank") ? chosenDate : chosenMonth;
+    downloadBlob(
+      lines.join("\n"),
+      `nexxt_${(state.store.name||"loja").replaceAll(" ","_")}_registros_${suffix}.csv`,
+      "text/csv;charset=utf-8"
+    );
+  }
+
+  // ======================
+  // FILA + FLUXO
+  // ======================
+  function handleQueueAction(act, sid){
+    if(state.current && state.current.sellerId === sid){
+      alert("Esse vendedor está em atendimento. Finalize antes de mover/remover.");
+      return;
+    }
+    const idx = state.queue.indexOf(sid);
+    if(idx === -1) return;
+
+    if(act === "up" && idx > 0) [state.queue[idx-1], state.queue[idx]] = [state.queue[idx], state.queue[idx-1]];
+    if(act === "down" && idx < state.queue.length-1) [state.queue[idx+1], state.queue[idx]] = [state.queue[idx], state.queue[idx+1]];
+
+    if(act === "pause"){
+      const s = getSeller(sid);
+      if(!s) return;
+      s.paused = !s.paused;
+      if(s.paused){
+        state.queue = state.queue.filter(x=>x!==sid);
+        if(!state.pool.includes(sid)) state.pool.push(sid);
+      } else {
+        if(!state.pool.includes(sid)) state.pool.push(sid);
+      }
+    }
+
+    if(act === "remove"){
+      state.queue = state.queue.filter(x=>x!==sid);
+      if(!state.pool.includes(sid)) state.pool.push(sid);
+    }
+
+    save(state);
+    renderAll();
+  }
+
+  function callNext(){
+    if(state.current){
+      alert("Já existe alguém em atendimento. Finalize antes de chamar o próximo.");
+      return;
+    }
+    while(state.queue.length > 0){
+      const sid = state.queue[0];
+      const s = getSeller(sid);
+      if(s && s.paused){
+        state.queue.shift();
+        if(!state.pool.includes(sid)) state.pool.push(sid);
+        continue;
+      }
+      state.current = { sellerId: sid, startTs: nowTs() };
+      state.queue.shift();
+      save(state);
+      renderAll();
+      return;
+    }
+    alert("Fila vazia. Adicione vendedores no rodapé.");
+  }
+
+  function finalizeCurrent(outcome){
+    if(!state.current) return;
+    if(outcome !== "sold" && outcome !== "nosold"){
+      alert("Selecione 'Vendeu' ou 'Não vendeu'.");
+      return;
+    }
+
+    const sid = state.current.sellerId;
+    const s = getSeller(sid);
+    if(!s){ state.current=null; save(state); renderAll(); return; }
+
+    const endTs = nowTs();
+    const tk = todayKey(new Date(state.current.startTs));
+    const mk = monthKey(new Date(state.current.startTs));
+
+    let value = 0, pieces = 0, noSale = null;
+
+    if(outcome==="sold"){
+      value = state.options.askValue ? parseBRNumber($("saleValue")?.value || "") : 0;
+      pieces = state.options.askPieces ? (parseInt(($("salePieces")?.value||"0"),10) || 0) : 0;
+    } else {
+      const reason = $("nsReason")?.value || "Outro";
+      const gender = $("nsGender")?.value || "";
+      const itemType = $("nsItemType")?.value || "";
+      const size = ($("nsSize")?.value || "").trim();
+      noSale = { reason, gender, itemType, size };
+    }
+
+    const obs = $("saleObs")?.value || "";
+
+    state.records.push({
+      id: uid(),
+      tsStart: state.current.startTs,
+      tsEnd: endTs,
+      dateKey: tk,
+      monthKey: mk,
+      sellerId: sid,
+      outcome,
+      value,
+      pieces,
+      noSale,
+      obs
+    });
+
+    if(outcome==="sold"){
+      const rect = document.body.getBoundingClientRect();
+      burstFx(window.innerWidth*0.72, window.innerHeight*0.30);
+    }
+
+    state.current = null;
+
+    if(!s.paused) state.queue.push(sid);
+    else if(!state.pool.includes(sid)) state.pool.push(sid);
+
+    save(state);
+    renderAll();
+
+    // metas e análises sempre atualizam
+    if($("viewMetas").style.display !== "none") renderGoals();
+    if($("viewMetasRank").style.display !== "none") renderMetaRank();
+    if($("viewNoConv").style.display !== "none") renderNoConv();
+  }
+
+  // ======================
+  // MODAIS + UTIL
+  // ======================
+  function openModal(backEl){ backEl.style.display = "flex"; }
+  function closeModal(backEl){ backEl.style.display = "none"; }
+  function fileToDataUrl(file){
+    return new Promise((resolve, reject)=>{
+      const reader = new FileReader();
+      reader.onload = ()=> resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function renderAll(){
+    applyTheme();
+    renderHeader();
+    renderKpis();
+    renderQueue();
+    renderPool();
+    renderCurrent();
+    if($("viewDados").style.display !== "none") renderData();
+    if($("viewMetas").style.display !== "none") renderGoals();
+    if($("viewMetasRank").style.display !== "none") renderMetaRank();
+    if($("viewNoConv").style.display !== "none") renderNoConv();
+  }
+
+  // ======================
+  // UI EVENTS
+  // ======================
+  $("btnCallNext").addEventListener("click", callNext);
+
+  // Tabs/views
+  function setTab(tab){
+    const ops = $("viewOps");
+    const dados = $("viewDados");
+    const metas = $("viewMetas");
+    const mRank = $("viewMetasRank");
+    const nc = $("viewNoConv");
+
+    const tOps = $("tabOps");
+    const tDados = $("tabDados");
+    const tMetas = $("tabMetas");
+    const tMR = $("tabMetasRank");
+    const tNC = $("tabNoConv");
+
+    ops.style.display = "none";
+    dados.style.display = "none";
+    metas.style.display = "none";
+    mRank.style.display = "none";
+    nc.style.display = "none";
+
+    tOps.classList.remove("active");
+    tDados.classList.remove("active");
+    tMetas.classList.remove("active");
+    tMR.classList.remove("active");
+    tNC.classList.remove("active");
+
+    if(tab === "ops"){ ops.style.display = ""; tOps.classList.add("active"); }
+    else if(tab === "dados"){ dados.style.display = ""; tDados.classList.add("active"); renderData(); }
+    else if(tab === "metas"){ metas.style.display = ""; tMetas.classList.add("active"); renderGoals(); }
+    else if(tab === "metasRank"){ mRank.style.display = ""; tMR.classList.add("active"); renderMetaRank(); }
+    else if(tab === "noConv"){ nc.style.display = ""; tNC.classList.add("active"); renderNoConv(); }
+  }
+  $("tabOps").addEventListener("click", ()=> setTab("ops"));
+  $("tabDados").addEventListener("click", ()=> setTab("dados"));
+  $("tabMetas").addEventListener("click", ()=> setTab("metas"));
+  $("tabMetasRank").addEventListener("click", ()=> setTab("metasRank"));
+  $("tabNoConv").addEventListener("click", ()=> setTab("noConv"));
+
+  $("btnData").addEventListener("click", ()=> setTab("dados"));
+  $("btnGoals").addEventListener("click", ()=> setTab("metas"));
+  $("btnGoalRank").addEventListener("click", ()=> setTab("metasRank"));
+  $("btnNoConv").addEventListener("click", ()=> setTab("noConv"));
+
+  // Data inputs
+  $("dataView").addEventListener("change", renderData);
+  $("dataDate").addEventListener("change", renderData);
+  $("dataMonth").addEventListener("change", renderData);
+  $("btnExportCSV").addEventListener("click", exportCSV);
+  $("btnExportJSON").addEventListener("click", exportJSON);
+
+  // Goals inputs (auto)
+  $("goalMonth").addEventListener("change", renderGoals);
+  $("goalMonthly").addEventListener("input", ()=> { saveGoalsDraftAndAuto(); });
+  ["pW1","pW2","pW3","pW4"].forEach(id=>{
+    $(id).addEventListener("input", ()=> { saveGoalsDraftAndAuto(); });
+  });
+
+  function saveGoalsDraftAndAuto(){
+    const mk = $("goalMonth").value || monthKey();
+    const g = getGoalsForMonth(mk);
+    g.monthly = parseBRNumber($("goalMonthly").value);
+    g.basePercents = [
+      parseBRNumber($("pW1").value),
+      parseBRNumber($("pW2").value),
+      parseBRNumber($("pW3").value),
+      parseBRNumber($("pW4").value),
+    ];
+    autoRedistributeGoals(mk);
+    save(state);
+    renderGoals();
+  }
+
+  $("btnSaveGoals").addEventListener("click", saveGoals);
+  $("btnAutoRedistribute").addEventListener("click", ()=>{
+    renderGoals();
+    alert("Redistribuição automática aplicada ✅");
+  });
+  $("btnCloseWeek").addEventListener("click", closeCurrentWeek);
+  $("btnReopenWeeks").addEventListener("click", reopenWeeks);
+
+  // Meta Rank
+  $("btnRefreshMetaRank").addEventListener("click", renderMetaRank);
+  $("metaRankMonth").addEventListener("change", renderMetaRank);
+  $("metaRankMonthly").addEventListener("input", ()=> {});
+  $("metaRankMode").addEventListener("change", renderMetaRank);
+
+  // Não convertidos
+  $("btnNoConvRefresh").addEventListener("click", renderNoConv);
+  $("ncView").addEventListener("change", renderNoConv);
+  $("ncDate").addEventListener("change", renderNoConv);
+  $("ncMonth").addEventListener("change", renderNoConv);
+
+  // Theme buttons
+  $("themeDefault").addEventListener("click", ()=>{
+    state.ui.theme = "default";
+    save(state);
+    renderAll();
+  });
+  $("themeNeon").addEventListener("click", ()=>{
+    state.ui.theme = "neon";
+    save(state);
+    renderAll();
+  });
+
+  // Settings modal
+  $("btnSettings").addEventListener("click", ()=>{
+    $("storeName").value = state.store.name || "";
+    $("storeStatus").value = state.store.status || "Online";
+    $("optValue").value = state.options.askValue ? "yes" : "no";
+    $("optPieces").value = state.options.askPieces ? "yes" : "no";
+    openModal($("settingsBack"));
+  });
+  $("closeSettings").addEventListener("click", ()=> closeModal($("settingsBack")));
+  $("settingsBack").addEventListener("click", (e)=>{ if(e.target === $("settingsBack")) closeModal($("settingsBack")); });
+
+  $("storeName").addEventListener("input", (e)=>{ state.store.name = e.target.value; save(state); renderHeader(); });
+  $("storeStatus").addEventListener("change", (e)=>{ state.store.status = e.target.value; save(state); renderHeader(); });
+  $("optValue").addEventListener("change", (e)=>{ state.options.askValue = e.target.value==="yes"; save(state); renderAll(); });
+  $("optPieces").addEventListener("change", (e)=>{ state.options.askPieces = e.target.value==="yes"; save(state); renderAll(); });
+
+  $("logoInput").addEventListener("change", async (e)=>{
+    const file = e.target.files?.[0];
+    if(!file) return;
+    state.store.logoDataUrl = await fileToDataUrl(file);
+    save(state);
+    renderHeader();
+  });
+
+  $("btnResetDay").addEventListener("click", ()=>{
+    if(!confirm("Zerar dia? Isso apaga os registros de HOJE.")) return;
+    const tk = todayKey();
+    state.records = state.records.filter(r => r.dateKey !== tk);
+    save(state);
+    renderAll();
+    alert("Registros de hoje zerados.");
+  });
+
+  $("btnResetAll").addEventListener("click", ()=>{
+    if(!confirm("Reset total? Apaga tudo.")) return;
+    localStorage.removeItem(KEY);
+    state = JSON.parse(JSON.stringify(defaultState));
+    state.sellers = [];
+    state.queue = [];
+    state.pool = [];
+    state.current = null;
+    state.records = [];
+    state.goalsByMonth = {};
+    state.ui = { theme: "default" };
+    save(state);
+    renderAll();
+    closeModal($("settingsBack"));
+    alert("Reset total concluído.");
+  });
+
+  // Add seller modal
+  $("btnAddSeller").addEventListener("click", ()=>{
+    $("sellerName").value = "";
+    $("sellerPhoto").value = "";
+    openModal($("sellerBack"));
+  });
+  $("closeSeller").addEventListener("click", ()=> closeModal($("sellerBack")));
+  $("sellerBack").addEventListener("click", (e)=>{ if(e.target === $("sellerBack")) closeModal($("sellerBack")); });
+
+  $("btnCreateSeller").addEventListener("click", async ()=>{
+    const name = $("sellerName").value.trim();
+    if(!name){ alert("Digite o nome do vendedor."); return; }
+    let photo = "";
+    const file = $("sellerPhoto").files?.[0];
+    if(file) photo = await fileToDataUrl(file);
+    const id = uid();
+    state.sellers.push({ id, name, photo, paused:false });
+    state.pool.push(id);
+    save(state);
+    renderAll();
+    closeModal($("sellerBack"));
+  });
+
+  // Ranking modal
+  $("btnRanking").addEventListener("click", ()=>{
+    renderRankingModal();
+    openModal($("rankingBack"));
+  });
+  $("closeRanking").addEventListener("click", ()=> closeModal($("rankingBack")));
+  $("rankingBack").addEventListener("click", (e)=>{ if(e.target === $("rankingBack")) closeModal($("rankingBack")); });
+
+  // Timer
+  setInterval(()=>{
+    if(!state.current) return;
+    const t = document.getElementById("timer");
+    if(!t) return;
+    const sec = Math.floor((nowTs() - state.current.startTs)/1000);
+    t.textContent = sec + "s";
+  }, 1000);
+
+  // Init inputs
+  try{
+    $("dataDate").value = todayKey();
+    $("dataMonth").value = monthKey();
+    $("goalMonth").value = monthKey();
+    $("metaRankMonth").value = monthKey();
+    $("ncDate").value = todayKey();
+    $("ncMonth").value = monthKey();
+  }catch{}
+
+  // Init
+  renderAll();
+</script>
+</body>
+</html>
